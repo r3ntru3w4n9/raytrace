@@ -5,7 +5,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import com.app.source.*;;
 
 public final class Config {
-    public static final int PROGRESS = 1000;
     public static final int NX = 1200;
     public static final int NY = 675;
     public static final int NS = 100;
