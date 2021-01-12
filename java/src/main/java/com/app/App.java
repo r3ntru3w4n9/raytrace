@@ -46,6 +46,8 @@ public final class App {
         try {
             ImageIO.write(bi, "PNG", file);
         } catch (Exception e) {
+            System.err.println(e.toString());
+            System.exit(1);
         }
 
         System.out.println("Finished");

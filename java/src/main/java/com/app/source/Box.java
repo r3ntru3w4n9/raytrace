@@ -1,7 +1,7 @@
 package com.app.source;
 
 public record Box(Pair x, Pair y, Pair z) {
-    Box wraps(Box other) {
+    Box wrap(Box other) {
         return new Box(Box.largerBound(this.x, other.x), Box.largerBound(this.y, other.y),
                 Box.largerBound(this.z, other.z));
     }
@@ -51,6 +51,6 @@ public record Box(Pair x, Pair y, Pair z) {
     }
 
     public static Box wraps(Box a, Box b) {
-        return a.wraps(b);
+        return a.wrap(b);
     }
 }

@@ -35,9 +35,7 @@ public final class List implements Hittable {
     public Box bounds() {
         switch (objects.size()) {
             case 0:
-                assert false;
-            case 1:
-                return objects.get(0).bounds();
+                throw new RuntimeException();
             default:
                 var iter = objects.iterator();
 

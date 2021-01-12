@@ -15,10 +15,8 @@ public record Vector(double x, double y, double z) {
                 return y();
             case 2:
                 return z();
-            default:
         }
-        assert false;
-        return 0.;
+        throw new RuntimeException();
     }
 
     @Override

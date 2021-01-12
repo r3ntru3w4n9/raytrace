@@ -34,7 +34,7 @@ public final class Tree implements Hittable {
 
         switch (objects.size()) {
             case 0:
-                assert false;
+                throw new RuntimeException();
             case 1:
                 return objects.get(0);
             case 2:

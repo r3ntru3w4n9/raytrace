@@ -34,8 +34,7 @@ public final class Config {
                 return new Glass(albedo, blur, refractive);
             default:
         }
-        assert false;
-        return null;
+        throw new RuntimeException();
     }
 
     public static Scene scenes() {
