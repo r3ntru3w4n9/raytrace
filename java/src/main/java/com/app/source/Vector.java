@@ -55,9 +55,13 @@ public final class Vector {
     }
 
     @Override
+    public int hashCode() {
+        return Double.hashCode(x) + Double.hashCode(y) + Double.hashCode(z);
+    }
+
+    @Override
     public boolean equals(Object obj) {
         var other = (Vector) obj;
-
         return this.x == other.x && this.y == other.y && this.z == other.z;
     }
 
