@@ -51,6 +51,7 @@ public final class App {
         }
 
         System.out.println("Finished");
+        System.exit(0);
     }
 }
 
