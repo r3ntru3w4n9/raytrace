@@ -91,7 +91,7 @@ public final class Scene implements Hittable {
                 var matter = data.matter();
                 var reflected = matter.scatter(towards, data.normal());
 
-                color.imul(matter.albedo());
+                color = color.mul(matter.albedo());
 
                 starting = data.point();
                 towards = reflected;

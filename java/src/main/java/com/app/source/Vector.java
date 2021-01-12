@@ -2,30 +2,9 @@ package com.app.source;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public final class Vector {
-    private double x;
-    private double y;
-    private double z;
-
+public record Vector(double x, double y, double z) {
     public Vector() {
-    }
-
-    public Vector(double x, double y, double z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-    }
-
-    public double x() {
-        return this.x;
-    }
-
-    public double y() {
-        return this.y;
-    }
-
-    public double z() {
-        return this.z;
+        this(0., 0., 0.);
     }
 
     public double get(int i) {
@@ -42,18 +21,6 @@ public final class Vector {
         return 0.;
     }
 
-    public void x(double v) {
-        this.x = v;
-    }
-
-    public void y(double v) {
-        this.y = v;
-    }
-
-    public void z(double v) {
-        this.z = v;
-    }
-
     @Override
     public int hashCode() {
         return Double.hashCode(x) + Double.hashCode(y) + Double.hashCode(z);
@@ -61,8 +28,12 @@ public final class Vector {
 
     @Override
     public boolean equals(Object obj) {
-        var other = (Vector) obj;
-        return this.x == other.x && this.y == other.y && this.z == other.z;
+        if (obj instanceof Vector vec) {
+            return this.x == vec.x && this.y == vec.y && this.z == vec.z;
+        } else {
+            return false;
+        }
+
     }
 
     public Vector add(Vector other) {
@@ -95,54 +66,6 @@ public final class Vector {
 
     public Vector div(double v) {
         return new Vector(this.x / v, this.y / v, this.z / v);
-    }
-
-    public void iadd(Vector other) {
-        this.x += other.x;
-        this.y += other.y;
-        this.z += other.z;
-    }
-
-    public void iadd(double v) {
-        this.x += v;
-        this.y += v;
-        this.z += v;
-    }
-
-    public void isub(Vector other) {
-        this.x -= other.x;
-        this.y -= other.y;
-        this.z -= other.z;
-    }
-
-    public void isub(double v) {
-        this.x -= v;
-        this.y -= v;
-        this.z -= v;
-    }
-
-    public void imul(Vector other) {
-        this.x *= other.x;
-        this.y *= other.y;
-        this.z *= other.z;
-    }
-
-    public void imul(double v) {
-        this.x *= v;
-        this.y *= v;
-        this.z *= v;
-    }
-
-    public void idiv(Vector other) {
-        this.x /= other.x;
-        this.y /= other.y;
-        this.z /= other.z;
-    }
-
-    public void idiv(double v) {
-        this.x /= v;
-        this.y /= v;
-        this.z /= v;
     }
 
     public double dot(Vector other) {

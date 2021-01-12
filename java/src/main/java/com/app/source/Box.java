@@ -1,28 +1,6 @@
 package com.app.source;
 
-public final class Box {
-    private final Pair x;
-    private final Pair y;
-    private final Pair z;
-
-    public Box(Pair x, Pair y, Pair z) {
-        this.x = x.ordered();
-        this.y = y.ordered();
-        this.z = z.ordered();
-    }
-
-    public Pair x() {
-        return this.x;
-    }
-
-    public Pair y() {
-        return this.y;
-    }
-
-    public Pair z() {
-        return this.z;
-    }
-
+public record Box(Pair x, Pair y, Pair z) {
     Box wraps(Box other) {
         return new Box(Box.largerBound(this.x, other.x), Box.largerBound(this.y, other.y),
                 Box.largerBound(this.z, other.z));

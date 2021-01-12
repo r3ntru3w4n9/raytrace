@@ -2,25 +2,7 @@ package com.app.source;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public final class Glass implements Material {
-    private final Vector albedo;
-    private final double blur;
-    private final double refractive;
-
-    public Glass(Vector albedo, double blur, double refractive) {
-        this.albedo = albedo;
-        this.blur = blur;
-        this.refractive = refractive;
-    }
-
-    public double blur() {
-        return this.blur;
-    }
-
-    public double refractive() {
-        return this.refractive;
-    }
-
+public record Glass(Vector albedo, double blur, double refractive) implements Material {
     static double schlick(double cosine, double ratio) {
         double r = (1. - ratio) / (1. + ratio);
         double sq = r * r;
@@ -54,10 +36,5 @@ public final class Glass implements Material {
         var casted = normal.mul(input.dot(normal) * 2.);
         return randBlur.add(input).sub(casted);
 
-    }
-
-    @Override
-    public Vector albedo() {
-        return albedo;
     }
 }

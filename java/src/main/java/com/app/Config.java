@@ -57,8 +57,8 @@ public final class Config {
         viewup = viewup.sub(proj).unit();
         var horizon = vision.cross(viewup).unit();
 
-        viewup.imul(height);
-        horizon.imul(width);
+        viewup = viewup.mul(height);
+        horizon = horizon.mul(width);
 
         var list = new List();
 
