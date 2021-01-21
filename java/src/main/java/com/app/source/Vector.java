@@ -31,7 +31,6 @@ public record Vector(double x, double y, double z) {
         } else {
             return false;
         }
-
     }
 
     public Vector add(Vector other) {

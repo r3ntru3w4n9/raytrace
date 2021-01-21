@@ -34,6 +34,7 @@ public record Sphere(Vector center, double radius, Material matter) implements H
         Vector min = center.sub(radius);
         Vector max = center.add(radius);
 
-        return new Box(new Pair(min.x(), max.x()), new Pair(min.y(), max.y()), new Pair(min.z(), max.z()));
+        return new Box(
+                new Pair(min.x(), max.x()), new Pair(min.y(), max.y()), new Pair(min.z(), max.z()));
     }
 }

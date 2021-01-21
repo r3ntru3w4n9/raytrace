@@ -35,6 +35,5 @@ public record Glass(Vector albedo, double blur, double refractive) implements Ma
 
         var casted = normal.mul(input.dot(normal) * 2.);
         return randBlur.add(input).sub(casted);
-
     }
 }

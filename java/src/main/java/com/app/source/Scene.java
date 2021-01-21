@@ -1,5 +1,6 @@
 package com.app.source;
 
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
@@ -9,7 +10,7 @@ public final class Scene implements Hittable {
     private Vector horizon;
     private Vector vertical;
 
-    private Hittable list;
+    private Optional<Hittable> list;
     private double aperture;
 
     public Scene(Vector source, Vector corner, Vector horizon, Vector vertical, double aperture) {
@@ -17,16 +18,17 @@ public final class Scene implements Hittable {
         this.corner = corner;
         this.horizon = horizon;
         this.vertical = vertical;
-        this.list = null;
+        this.list = Optional.empty();
         this.aperture = aperture;
     }
 
-    public Scene(Vector source, Vector corner, Vector horizon, Vector vertical, Hittable list, double aperture) {
+    public Scene(Vector source, Vector corner, Vector horizon, Vector vertical, Hittable list,
+            double aperture) {
         this.source = source;
         this.corner = corner;
         this.horizon = horizon;
         this.vertical = vertical;
-        this.list = list;
+        this.list = Optional.of(list);
         this.aperture = aperture;
     }
 
@@ -63,11 +65,11 @@ public final class Scene implements Hittable {
     }
 
     public Hittable list() {
-        return this.list;
+        return this.list.get();
     }
 
-    public void list(Hittable a) {
-        this.list = a;
+    public void save(Hittable h) {
+        this.list = Optional.of(h);
     }
 
     public double aperture() {
@@ -76,10 +78,6 @@ public final class Scene implements Hittable {
 
     public void aperture(double a) {
         this.aperture = a;
-    }
-
-    public void save(Hittable h) {
-        list = h;
     }
 
     public Vector color_trace(Vector starting, Vector towards, int depth) {
@@ -116,18 +114,21 @@ public final class Scene implements Hittable {
         Vector v = vertical.unit().mul(aj);
         Vector start = source.add(h).add(v);
 
-        var color = IntStream.range(0, ns).sequential().mapToObj(_i -> {
-            double i = ((double) x + random.nextDouble()) / dx;
-            double j = ((double) y + random.nextDouble()) / dy;
+        var color = IntStream.range(0, ns)
+                            .sequential()
+                            .mapToObj(_i -> {
+                                double i = ((double) x + random.nextDouble()) / dx;
+                                double j = ((double) y + random.nextDouble()) / dy;
 
-            Vector end = corner.add(horizon.mul(i).add(vertical.mul(j)));
-            Vector towards = end.sub(start);
+                                Vector end = corner.add(horizon.mul(i).add(vertical.mul(j)));
+                                Vector towards = end.sub(start);
 
-            return color_trace(start, towards, depth);
-        }).reduce(Vector.o(), Vector::add);
+                                return color_trace(start, towards, depth);
+                            })
+                            .reduce(Vector.o(), Vector::add);
 
         var pixel = color.div(ns).mul(255.999);
-        return new int[] { (int) pixel.x(), (int) pixel.y(), (int) pixel.z() };
+        return new int[] {(int) pixel.x(), (int) pixel.y(), (int) pixel.z()};
     }
 
     public static double[] randomDisk(double radius) {
@@ -137,19 +138,18 @@ public final class Scene implements Hittable {
             double y = random.nextDouble();
 
             if (x * x + y * y <= 1.) {
-                return new double[] { x * radius, y * radius };
+                return new double[] {x * radius, y * radius};
             }
         }
     }
 
     @Override
     public HitData hit(Vector source, Vector towards) {
-
-        return list.hit(source, towards);
+        return list().hit(source, towards);
     }
 
     @Override
     public Box bounds() {
-        return list.bounds();
+        return list().bounds();
     }
 }
