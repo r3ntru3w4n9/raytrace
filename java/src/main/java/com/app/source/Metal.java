@@ -1,6 +1,16 @@
 package com.app.source;
 
-public record Metal(Vector albedo, double blur) implements Material {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NonNull;
+
+@Data
+@AllArgsConstructor
+public final class Metal implements Material {
+    @NonNull
+    private Vector albedo;
+    private double blur;
+
     @Override
     public Vector scatter(Vector input, Vector normal) {
         input = input.unit();

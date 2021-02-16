@@ -1,6 +1,18 @@
 package com.app.source;
 
-public record Sphere(Vector center, double radius, Material matter) implements Hittable {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NonNull;
+
+@Data
+@AllArgsConstructor
+public final class Sphere implements Hittable {
+    @NonNull
+    Vector center;
+    double radius;
+    @NonNull
+    Material matter;
+
     public Vector normal(Vector point) {
         return point.sub(center);
     }
@@ -34,7 +46,7 @@ public record Sphere(Vector center, double radius, Material matter) implements H
         Vector min = center.sub(radius);
         Vector max = center.add(radius);
 
-        return new Box(
-                new Pair(min.x(), max.x()), new Pair(min.y(), max.y()), new Pair(min.z(), max.z()));
+        return new Box(new Pair(min.getX(), max.getX()), new Pair(min.getY(), max.getY()),
+                new Pair(min.getZ(), max.getZ()));
     }
 }

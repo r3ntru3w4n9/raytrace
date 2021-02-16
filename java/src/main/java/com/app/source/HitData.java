@@ -1,6 +1,15 @@
 package com.app.source;
 
-public record HitData(double t, Vector point, Vector normal, Material matter) {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
+public final class HitData {
+    private double t;
+    private Vector point, normal;
+    private Material material;
+
     public HitData(double t) {
         this(t, null, null, null);
     }

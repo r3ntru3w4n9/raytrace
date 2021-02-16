@@ -27,7 +27,7 @@ public final class List implements Hittable {
         var minHit = HitData.miss();
         for (Hittable h : objects) {
             var data = h.hit(source, towards);
-            minHit = (data.t() < minHit.t()) ? data : minHit;
+            minHit = (data.getT() < minHit.getT()) ? data : minHit;
         }
         return minHit;
     }

@@ -2,12 +2,14 @@ package com.app.source;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 
-@EqualsAndHashCode
-@ToString
-public record Vector(double x, double y, double z) {
+@Data
+@AllArgsConstructor
+public final class Vector {
+    double x, y, z;
+
     public Vector() {
         this(0., 0., 0.);
     }
@@ -15,11 +17,11 @@ public record Vector(double x, double y, double z) {
     public double get(int i) {
         switch (i) {
             case 0:
-                return x();
+                return x;
             case 1:
-                return y();
+                return y;
             case 2:
-                return z();
+                return z;
         }
         throw new RuntimeException();
     }
@@ -131,9 +133,9 @@ public record Vector(double x, double y, double z) {
     public static Vector randomBall(double radius) {
         for (;;) {
             var random = Vector.random();
-            assert 0. <= random.x() && random.x() < 1;
-            assert 0. <= random.y() && random.y() < 1;
-            assert 0. <= random.z() && random.z() < 1;
+            assert 0. <= random.x && random.x < 1;
+            assert 0. <= random.y && random.y < 1;
+            assert 0. <= random.z && random.z < 1;
             if (random.l2() <= 1.) {
                 return random.mul(radius);
             }

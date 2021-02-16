@@ -2,6 +2,9 @@ package com.app.source;
 
 import java.util.Collections;
 
+import lombok.Data;
+
+@Data
 public final class Tree implements Hittable {
     Hittable root;
 
@@ -19,9 +22,9 @@ public final class Tree implements Hittable {
         Vector variance = list.stream().map(Hittable::bounds).map(Box::center).map(v -> v.sub(avg)).reduce(new Vector(),
                 Vector::add);
 
-        if (variance.x() > variance.y() && variance.x() > variance.z()) {
+        if (variance.getX() > variance.getY() && variance.getX() > variance.getZ()) {
             return Axis.X;
-        } else if (variance.y() > variance.z()) {
+        } else if (variance.getY() > variance.getZ()) {
             return Axis.Y;
         } else {
             return Axis.Z;
@@ -42,15 +45,15 @@ public final class Tree implements Hittable {
                 switch (maxVar(objects)) {
                     case X:
                         Collections.sort(objects,
-                                (a, b) -> Double.compare(a.bounds().center().x(), b.bounds().center().x()));
+                                (a, b) -> Double.compare(a.bounds().center().getX(), b.bounds().center().getX()));
                         break;
                     case Y:
                         Collections.sort(objects,
-                                (a, b) -> Double.compare(a.bounds().center().y(), b.bounds().center().y()));
+                                (a, b) -> Double.compare(a.bounds().center().getY(), b.bounds().center().getY()));
                         break;
                     case Z:
                         Collections.sort(objects,
-                                (a, b) -> Double.compare(a.bounds().center().z(), b.bounds().center().z()));
+                                (a, b) -> Double.compare(a.bounds().center().getZ(), b.bounds().center().getZ()));
                         break;
                 }
 
@@ -97,7 +100,7 @@ class TreeNode implements Hittable {
         boolean leftIsHit = leftHit.isHit();
         boolean rightIsHit = rightHit.isHit();
 
-        return leftIsHit ? (rightIsHit ? (leftHit.t() < rightHit.t() ? leftHit : rightHit) : leftHit)
+        return leftIsHit ? (rightIsHit ? (leftHit.getT() < rightHit.getT() ? leftHit : rightHit) : leftHit)
                 : (rightIsHit ? rightHit : HitData.miss());
     }
 

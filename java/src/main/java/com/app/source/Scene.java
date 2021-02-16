@@ -4,11 +4,13 @@ import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public final class Scene implements Hittable {
     private Vector source;
     private Vector corner;
@@ -18,38 +20,24 @@ public final class Scene implements Hittable {
     private double aperture;
 
     public Scene(Vector source, Vector corner, Vector horizon, Vector vertical, double aperture) {
-        this.source = source;
-        this.corner = corner;
-        this.horizon = horizon;
-        this.vertical = vertical;
-        this.list = null;
-        this.aperture = aperture;
-    }
-
-    public Scene(Vector source, Vector corner, Vector horizon, Vector vertical, Hittable list, double aperture) {
-        this.source = source;
-        this.corner = corner;
-        this.horizon = horizon;
-        this.vertical = vertical;
-        this.list = list;
-        this.aperture = aperture;
+        this(source, corner, horizon, vertical, null, aperture);
     }
 
     public Vector color_trace(Vector starting, Vector towards, int depth) {
         var color = Vector.uniform(1.);
         for (int d = 0; d < depth; ++d) {
-            var data = hit(starting, towards);
+            HitData data = hit(starting, towards);
 
             if (data.isHit()) {
-                var matter = data.matter();
-                var reflected = matter.scatter(towards, data.normal());
+                Material matter = data.getMaterial();
+                var reflected = matter.scatter(towards, data.getNormal());
 
-                color = color.mul(matter.albedo());
+                color = color.mul(matter.getAlbedo());
 
-                starting = data.point();
+                starting = data.getPoint();
                 towards = reflected;
             } else {
-                double t = .5 * (towards.unit().y() + 1.);
+                double t = .5 * (towards.unit().getY() + 1.);
                 var back = Vector.uniform(1.).mul(1. - t).add(new Vector(.5, .7, 1.).mul(t));
                 return color.mul(back);
             }
@@ -80,7 +68,7 @@ public final class Scene implements Hittable {
         }).reduce(Vector.o(), Vector::add);
 
         var pixel = color.div(ns).mul(255.999);
-        return new int[] { (int) pixel.x(), (int) pixel.y(), (int) pixel.z() };
+        return new int[] { (int) pixel.getX(), (int) pixel.getY(), (int) pixel.getZ() };
     }
 
     public static double[] randomDisk(double radius) {
