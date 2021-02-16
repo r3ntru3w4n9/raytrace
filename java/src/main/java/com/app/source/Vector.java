@@ -2,6 +2,11 @@ package com.app.source;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
+@EqualsAndHashCode
+@ToString
 public record Vector(double x, double y, double z) {
     public Vector() {
         this(0., 0., 0.);
@@ -19,19 +24,19 @@ public record Vector(double x, double y, double z) {
         throw new RuntimeException();
     }
 
-    @Override
-    public int hashCode() {
-        return Double.hashCode(x) + Double.hashCode(y) + Double.hashCode(z);
-    }
+    // @Override
+    // public int hashCode() {
+    // return Double.hashCode(x) + Double.hashCode(y) + Double.hashCode(z);
+    // }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Vector vec) {
-            return this.x == vec.x && this.y == vec.y && this.z == vec.z;
-        } else {
-            return false;
-        }
-    }
+    // @Override
+    // public boolean equals(Object obj) {
+    // if (obj instanceof Vector vec) {
+    // return this.x == vec.x && this.y == vec.y && this.z == vec.z;
+    // } else {
+    // return false;
+    // }
+    // }
 
     public Vector add(Vector other) {
         return new Vector(this.x + other.x, this.y + other.y, this.z + other.z);
@@ -96,11 +101,6 @@ public record Vector(double x, double y, double z) {
     public Vector cross(Vector other) {
         return new Vector(this.y * other.z - this.z * other.y, this.z * other.x - this.x * other.z,
                 this.x * other.y - this.y * other.x);
-    }
-
-    @Override
-    public String toString() {
-        return String.format("Vector{%f, %f, %f}", x, y, z);
     }
 
     public static Vector uniform(double n) {

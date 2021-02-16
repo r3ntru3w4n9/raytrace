@@ -2,6 +2,11 @@ package com.app.source;
 
 import java.util.ArrayList;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public final class List implements Hittable {
     private ArrayList<Hittable> objects;
 
@@ -11,10 +16,6 @@ public final class List implements Hittable {
 
     public List(ArrayList<Hittable> objects) {
         this.objects = objects;
-    }
-
-    public ArrayList<Hittable> get() {
-        return objects;
     }
 
     public void add(Hittable obj) {

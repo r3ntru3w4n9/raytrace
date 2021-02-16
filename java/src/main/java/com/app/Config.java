@@ -82,7 +82,7 @@ public final class Config {
 
         var h = TREE ? new Tree(list) : list;
 
-        scene.save(h);
+        scene.setList(h);
 
         return scene;
     }
