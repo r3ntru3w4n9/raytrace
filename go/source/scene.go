@@ -11,9 +11,15 @@ type Scene struct {
 	aperture                          float64
 }
 
-// NewScene returns a new View
-func NewScene(source, corner, horizon, vertical Vector, aperture float64) Scene {
+// MakeScene returns a new View
+func MakeScene(source, corner, horizon, vertical Vector, aperture float64) Scene {
 	return Scene{source, corner, horizon, vertical, nil, aperture}
+}
+
+// NewScene returns a new View
+func NewScene(source, corner, horizon, vertical Vector, aperture float64) *Scene {
+	scene := MakeScene(source, corner, horizon, vertical, aperture)
+	return &scene
 }
 
 // Source returns the source of the scene

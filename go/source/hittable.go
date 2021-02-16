@@ -13,19 +13,37 @@ type HitData struct {
 	matter        Material
 }
 
-// NewHitData returns a new HitData
-func NewHitData(t float64, point, normal Vector, matter Material) HitData {
+// MakeHitData returns a new HitData
+func MakeHitData(t float64, point, normal Vector, matter Material) HitData {
 	return HitData{t, point, normal, matter}
+}
+
+// NewHitData returns a new HitData
+func NewHitData(t float64, point, normal Vector, matter Material) *HitData {
+	hd := MakeHitData(t, point, normal, matter)
+	return &hd
+}
+
+// MakeHit creates a new data indicating that the object is hit
+func MakeHit(t float64, point, normal Vector, matter Material) HitData {
+	return MakeHitData(t, point, normal, matter)
 }
 
 // NewHit creates a new data indicating that the object is hit
-func NewHit(t float64, point, normal Vector, matter Material) HitData {
-	return HitData{t, point, normal, matter}
+func NewHit(t float64, point, normal Vector, matter Material) *HitData {
+	hit := MakeHit(t, point, normal, matter)
+	return &hit
+}
+
+// MakeMiss creates a new HitData indicating that the object has been missed
+func MakeMiss() HitData {
+	return HitData{t: PosInf}
 }
 
 // NewMiss creates a new HitData indicating that the object has been missed
-func NewMiss() HitData {
-	return HitData{t: PosInf}
+func NewMiss() *HitData {
+	miss := MakeMiss()
+	return &miss
 }
 
 // T returns the distance at which the object is hit

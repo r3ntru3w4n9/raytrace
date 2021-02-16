@@ -2,7 +2,6 @@ package com.app;
 
 import com.app.source.*;
 
-;
 import java.util.concurrent.ThreadLocalRandom;
 
 public final class Config {
@@ -67,8 +66,7 @@ public final class Config {
                 var iF = (double) i;
                 var jF = (double) j;
 
-                var center = new Vector(
-                        iF + .9 * random.nextDouble(), .2, jF + .9 * random.nextDouble());
+                var center = new Vector(iF + .9 * random.nextDouble(), .2, jF + .9 * random.nextDouble());
 
                 list.add(new Sphere(center, .2, randomMaterial()));
             }
@@ -80,8 +78,7 @@ public final class Config {
         list.add(new Sphere(new Vector(-4., 1., 0.), 1., new Matte(new Vector(.4, .2, .1))));
         list.add(new Sphere(new Vector(4., 1., 0.), 1., new Metal(new Vector(.7, .6, .5), 0.)));
 
-        var scene = new Scene(
-                eye, lookat.sub(viewup).sub(horizon), horizon.mul(2.), viewup.mul(2.), APERTURE);
+        var scene = new Scene(eye, lookat.sub(viewup).sub(horizon), horizon.mul(2.), viewup.mul(2.), APERTURE);
 
         var h = TREE ? new Tree(list) : list;
 

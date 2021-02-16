@@ -45,11 +45,11 @@ func randomMaterial(materialCode, blur, refractive float64, albedo src.Vector) s
 	albedo.IDivS(2.)
 	switch mat {
 	case 0:
-		return src.NewMatte(albedo)
+		return src.MakeMatte(albedo)
 	case 1:
-		return src.NewMetal(albedo, blur)
+		return src.MakeMetal(albedo, blur)
 	case 2:
-		return src.NewGlass(albedo, blur, refractive)
+		return src.MakeGlass(albedo, blur, refractive)
 	default:
 		panic("unreachable")
 	}
@@ -57,7 +57,7 @@ func randomMaterial(materialCode, blur, refractive float64, albedo src.Vector) s
 
 // Scenes are set up here
 func Scenes() src.Scene {
-	eye := src.NewVector(13., 2., 3.)
+	eye := src.MakeVector(13., 2., 3.)
 	lookat := src.VectorO()
 	viewup := src.VectorJ()
 
@@ -75,44 +75,44 @@ func Scenes() src.Scene {
 	viewup.IMulS(height)
 	horizon.IMulS(width)
 
-	list := src.NewList()
+	list := src.MakeList()
 
 	gen := rand.New(rand.NewSource(time.Now().Unix()))
 	for i := -11; i < 11; i++ {
 		for j := -11; j < 11; j++ {
 			iF := float64(i)
 			jF := float64(j)
-			center := src.NewVector(
+			center := src.MakeVector(
 				iF+.9*gen.Float64(), .2, jF+.9*gen.Float64(),
 			)
 
 			list.Register(
-				src.NewSphere(
+				src.MakeSphere(
 					center, .2, randomMaterial(
 						gen.Float64(), gen.Float64(), gen.Float64(), src.VectorRandom(gen))))
 		}
 	}
 
-	list.Register(src.NewSphere(
-		src.NewVector(0., -1000., 0.), 1000., src.NewMatte(src.VectorUniform(.9)),
+	list.Register(src.MakeSphere(
+		src.MakeVector(0., -1000., 0.), 1000., src.MakeMatte(src.VectorUniform(.9)),
 	))
 
-	list.Register(src.NewSphere(
-		src.VectorJ(), 1., src.NewGlass(
+	list.Register(src.MakeSphere(
+		src.VectorJ(), 1., src.MakeGlass(
 			src.VectorUniform(1.), 0., 1.5,
 		)),
 	)
 
-	list.Register(src.NewSphere(
-		src.NewVector(-4., 1., 0.), 1., src.NewMatte(src.NewVector(.4, .2, .1)),
+	list.Register(src.MakeSphere(
+		src.MakeVector(-4., 1., 0.), 1., src.MakeMatte(src.MakeVector(.4, .2, .1)),
 	))
 
-	list.Register(src.NewSphere(
-		src.NewVector(4., 1., 0.), 1.,
-		src.NewMetal(src.NewVector(.7, .6, .5), 0.),
+	list.Register(src.MakeSphere(
+		src.MakeVector(4., 1., 0.), 1.,
+		src.MakeMetal(src.MakeVector(.7, .6, .5), 0.),
 	))
 
-	scene := src.NewScene(
+	scene := src.MakeScene(
 		eye,
 		lookat.Sub(viewup).Sub(horizon),
 		horizon.MulS(2.),
@@ -123,7 +123,7 @@ func Scenes() src.Scene {
 	var hittable src.Hittable
 
 	if TREE {
-		hittable = src.NewTree(list)
+		hittable = src.MakeTree(list)
 	} else {
 		hittable = list
 	}

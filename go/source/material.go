@@ -14,8 +14,14 @@ type Material interface {
 // Matte is a mathematically ideal lambertian material
 type Matte struct{ albedo Vector }
 
+// MakeMatte returns a new type of matte
+func MakeMatte(albedo Vector) Matte { return Matte{albedo} }
+
 // NewMatte returns a new type of matte
-func NewMatte(albedo Vector) Matte { return Matte{albedo} }
+func NewMatte(albedo Vector) *Matte {
+	matte := MakeMatte(albedo)
+	return &matte
+}
 
 // Albedo returns the albedo matte has
 func (mat Matte) Albedo() Vector { return mat.albedo }
@@ -35,8 +41,14 @@ type Metal struct {
 	blur   float64
 }
 
+// MakeMetal creates a new kind of metal
+func MakeMetal(albedo Vector, blur float64) Metal { return Metal{albedo, blur} }
+
 // NewMetal creates a new kind of metal
-func NewMetal(albedo Vector, blur float64) Metal { return Metal{albedo, blur} }
+func NewMetal(albedo Vector, blur float64) *Metal {
+	metal := MakeMetal(albedo, blur)
+	return &metal
+}
 
 // Blur returns the blur a metal could have
 func (met Metal) Blur() float64 { return met.blur }
@@ -65,8 +77,14 @@ type Glass struct {
 	blur, refractive float64
 }
 
-// NewGlass creates glass
-func NewGlass(albedo Vector, blur, refractive float64) Glass { return Glass{albedo, blur, refractive} }
+// MakeGlass creates a new kind of glass
+func MakeGlass(albedo Vector, blur, refractive float64) Glass { return Glass{albedo, blur, refractive} }
+
+// NewGlass creates a new kind of glass
+func NewGlass(albedo Vector, blur, refractive float64) *Glass {
+	glass := MakeGlass(albedo, blur, refractive)
+	return &glass
+}
 
 // Albedo returns the albedo for glass
 func (gls Glass) Albedo() Vector { return gls.albedo }

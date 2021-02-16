@@ -11,9 +11,15 @@ type Sphere struct {
 	matter Material
 }
 
-// NewSphere creates a new sphere
-func NewSphere(center Vector, radius float64, matter Material) Sphere {
+// MakeSphere creates a new sphere
+func MakeSphere(center Vector, radius float64, matter Material) Sphere {
 	return Sphere{center, radius, matter}
+}
+
+// NewSphere creates a new sphere
+func NewSphere(center Vector, radius float64, matter Material) *Sphere {
+	sphere := MakeSphere(center, radius, matter)
+	return &sphere
 }
 
 // Center returns the center of a sphere
@@ -52,12 +58,12 @@ func (sph Sphere) Hit(source, towards Vector) HitData {
 	switch {
 	case neg > 0:
 		point := source.Add(towards.MulS(neg))
-		return NewHit(neg, point, sph.Normal(point), sph.matter)
+		return MakeHit(neg, point, sph.Normal(point), sph.matter)
 	case pos > 0:
 		point := source.Add(towards.MulS(pos))
-		return NewHit(pos, point, sph.Normal(point), sph.matter)
+		return MakeHit(pos, point, sph.Normal(point), sph.matter)
 	default:
-		return NewMiss()
+		return MakeMiss()
 	}
 }
 
@@ -66,7 +72,7 @@ func (sph Sphere) Bounds() Box {
 	min := sph.center.SubS(sph.radius)
 	max := sph.center.AddS(sph.radius)
 
-	return NewBox(
+	return MakeBox(
 		TupleFloat{min[0], max[0]},
 		TupleFloat{min[1], max[1]},
 		TupleFloat{min[2], max[2]},

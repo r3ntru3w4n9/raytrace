@@ -10,9 +10,15 @@ type List struct {
 	objects []Hittable
 }
 
-// NewList creates a new `List` instance
-func NewList() List {
+// MakeList creates a new `List` instance
+func MakeList() List {
 	return List{objects: make([]Hittable, 0)}
+}
+
+// NewList creates a new `List` instance
+func NewList() *List {
+	list := MakeList()
+	return &list
 }
 
 // AsList creates a new `List` from an exisiting slice
@@ -26,7 +32,7 @@ func (lst *List) Register(obj Hittable) {
 // Hit implements Hittable for List
 func (lst List) Hit(source, towards Vector) HitData {
 	towards = towards.Unit()
-	closest := NewMiss()
+	closest := MakeMiss()
 	for _, obj := range lst.objects {
 		data := obj.Hit(source, towards)
 		if data.T() < closest.T() {
@@ -56,9 +62,15 @@ func (lst List) Bounds() Box {
 // TupleFloat holds a pair of `int`s
 type TupleFloat [2]float64
 
-// NewTupleFloat returns a new `TupleFloat`
-func NewTupleFloat(a, b float64) TupleFloat {
+// MakeTupleFloat returns a new `TupleFloat`
+func MakeTupleFloat(a, b float64) TupleFloat {
 	return TupleFloat{a, b}
+}
+
+// NewTupleFloat returns a new `TupleFloat`
+func NewTupleFloat(a, b float64) *TupleFloat {
+	tf := MakeTupleFloat(a, b)
+	return &tf
 }
 
 func (tf TupleFloat) ordered() TupleFloat {
@@ -71,9 +83,15 @@ func (tf TupleFloat) ordered() TupleFloat {
 // Box is a box that bounds
 type Box [3]TupleFloat
 
-// NewBox creates a new Box
-func NewBox(x, y, z TupleFloat) Box {
+// MakeBox creates a new Box
+func MakeBox(x, y, z TupleFloat) Box {
 	return Box{x.ordered(), y.ordered(), z.ordered()}
+}
+
+// NewBox creates a new Box
+func NewBox(x, y, z TupleFloat) *Box {
+	box := MakeBox(x, y, z)
+	return &box
 }
 
 func largerBound(a, b TupleFloat) (result TupleFloat) {
@@ -94,7 +112,7 @@ func largerBound(a, b TupleFloat) (result TupleFloat) {
 
 // Wraps wraps two bounding boxes into a single box
 func Wraps(a, b Box) Box {
-	return NewBox(
+	return MakeBox(
 		largerBound(a[0], b[0]),
 		largerBound(a[1], b[1]),
 		largerBound(a[2], b[2]),
@@ -189,16 +207,22 @@ type TreeNode struct {
 	left, right Hittable
 }
 
-// NewTreeNode creates a new TreeNode
-func NewTreeNode(left, right Hittable) TreeNode {
+// MakeTreeNode creates a new TreeNode
+func MakeTreeNode(left, right Hittable) TreeNode {
 	box := Wraps(left.Bounds(), right.Bounds())
 	return TreeNode{box, left, right}
+}
+
+// NewTreeNode creates a new TreeNode
+func NewTreeNode(left, right Hittable) *TreeNode {
+	tn := MakeTreeNode(left, right)
+	return &tn
 }
 
 // Hit implements Hittable for TreeNode
 func (tn TreeNode) Hit(source, towards Vector) HitData {
 	if !tn.box.Through(source, towards) {
-		return NewMiss()
+		return MakeMiss()
 	}
 
 	leftHit := tn.left.Hit(source, towards)
@@ -219,7 +243,7 @@ func (tn TreeNode) Hit(source, towards Vector) HitData {
 	case !leftHasHit && rightHasHit:
 		return rightHit
 	case !leftHasHit && !rightHasHit:
-		return NewMiss()
+		return MakeMiss()
 	default:
 		panic("unreachable")
 	}
@@ -273,10 +297,16 @@ func recursivePartition(list []Hittable) Hittable {
 	}
 }
 
-// NewTree creates a new tree from a List
-func NewTree(list List) Tree {
+// MakeTree creates a new tree from a List
+func MakeTree(list List) Tree {
 	objects := list.objects
 	return Tree{recursivePartition(objects)}
+}
+
+// NewTree creates a new tree from a List
+func NewTree(list List) *Tree {
+	tree := MakeTree(list)
+	return &tree
 }
 
 // Hit implments Hittable for Tree

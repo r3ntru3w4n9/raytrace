@@ -8,8 +8,14 @@ import (
 // Vector represents an Nd vector
 type Vector [3]float64
 
+// MakeVector creates a vector from a given dimension
+func MakeVector(x, y, z float64) Vector { return Vector{x, y, z} }
+
 // NewVector creates a vector from a given dimension
-func NewVector(x, y, z float64) Vector { return Vector{x, y, z} }
+func NewVector(x, y, z float64) *Vector {
+	vec := MakeVector(x, y, z)
+	return &vec
+}
 
 // X returns vector.x
 func (vec Vector) X() float64 { return vec[0] }
