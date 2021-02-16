@@ -29,15 +29,15 @@ public final class Scene implements Hittable {
             HitData data = hit(starting, towards);
 
             if (data.isHit()) {
-                Material matter = data.getMaterial();
-                var reflected = matter.scatter(towards, data.getNormal());
+                Material matter = data.material();
+                var reflected = matter.scatter(towards, data.normal());
 
-                color = color.mul(matter.getAlbedo());
+                color = color.mul(matter.albedo());
 
-                starting = data.getPoint();
+                starting = data.point();
                 towards = reflected;
             } else {
-                double t = .5 * (towards.unit().getY() + 1.);
+                double t = .5 * (towards.unit().y() + 1.);
                 var back = Vector.uniform(1.).mul(1. - t).add(new Vector(.5, .7, 1.).mul(t));
                 return color.mul(back);
             }
@@ -68,7 +68,7 @@ public final class Scene implements Hittable {
         }).reduce(Vector.o(), Vector::add);
 
         var pixel = color.div(ns).mul(255.999);
-        return new int[] { (int) pixel.getX(), (int) pixel.getY(), (int) pixel.getZ() };
+        return new int[] { (int) pixel.x(), (int) pixel.y(), (int) pixel.z() };
     }
 
     public static double[] randomDisk(double radius) {

@@ -2,14 +2,7 @@ package com.app.source;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
-@Data
-@AllArgsConstructor
-public final class Vector {
-    double x, y, z;
-
+public record Vector(double x, double y, double z) {
     public Vector() {
         this(0., 0., 0.);
     }
@@ -25,20 +18,6 @@ public final class Vector {
         }
         throw new RuntimeException();
     }
-
-    // @Override
-    // public int hashCode() {
-    // return Double.hashCode(x) + Double.hashCode(y) + Double.hashCode(z);
-    // }
-
-    // @Override
-    // public boolean equals(Object obj) {
-    // if (obj instanceof Vector vec) {
-    // return this.x == vec.x && this.y == vec.y && this.z == vec.z;
-    // } else {
-    // return false;
-    // }
-    // }
 
     public Vector add(Vector other) {
         return new Vector(this.x + other.x, this.y + other.y, this.z + other.z);

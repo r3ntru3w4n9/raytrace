@@ -1,15 +1,6 @@
 package com.app.source;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NonNull;
-
-@Data
-@AllArgsConstructor
-public final class Matte implements Material {
-    @NonNull
-    private Vector albedo;
-
+public record Matte(Vector albedo) implements Material {
     @Override
     public Vector scatter(Vector input, Vector normal) {
         normal = normal.unit();

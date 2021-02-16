@@ -2,18 +2,7 @@ package com.app.source;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NonNull;
-
-@Data
-@AllArgsConstructor
-public final class Glass implements Material {
-
-    @NonNull
-    private Vector albedo;
-    private double blur, refractive;
-
+public record Glass(Vector albedo, double blur, double refractive) implements Material {
     static double schlick(double cosine, double ratio) {
         double r = (1. - ratio) / (1. + ratio);
         double sq = r * r;

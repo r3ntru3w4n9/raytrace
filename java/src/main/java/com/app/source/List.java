@@ -2,20 +2,18 @@ package com.app.source;
 
 import java.util.ArrayList;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@AllArgsConstructor
 public final class List implements Hittable {
     private ArrayList<Hittable> objects;
 
     public List() {
-        this.objects = new ArrayList<Hittable>();
-    }
-
-    public List(ArrayList<Hittable> objects) {
-        this.objects = objects;
+        this(new ArrayList<Hittable>());
     }
 
     public void add(Hittable obj) {
@@ -27,7 +25,7 @@ public final class List implements Hittable {
         var minHit = HitData.miss();
         for (Hittable h : objects) {
             var data = h.hit(source, towards);
-            minHit = (data.getT() < minHit.getT()) ? data : minHit;
+            minHit = (data.t() < minHit.t()) ? data : minHit;
         }
         return minHit;
     }
