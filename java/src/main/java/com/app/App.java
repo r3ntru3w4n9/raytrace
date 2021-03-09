@@ -5,6 +5,7 @@ import com.app.source.*;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -25,8 +26,8 @@ public final class App {
         var list = ProgressBar.wrap(IntStream.range(0, TOTAL),
                                     "Percentage of pixels processed").parallel()
                    .map(idx -> {
-            var i = idx / Config.NY;
-            var j = idx % Config.NY;
+            int i = idx / Config.NY;
+            int j = idx % Config.NY;
 
             var color =
                 scene.color(i, j, Config.NS, Config.DEP, Config.NX, Config.NY);
@@ -35,9 +36,9 @@ public final class App {
 
         for (var data : list) {
             var pair = data.pair;
-            var l    = (int[]) data.list;
+            int[] l  = (int[]) data.list;
 
-            var color = new Color(l[0], l[1], l[2]);
+            Color color = new Color(l[0], l[1], l[2]);
             bi.setRGB(pair.getKey(),
                       Config.NY - pair.getValue() - 1,
                       color.getRGB());
@@ -50,15 +51,14 @@ public final class App {
 
         dir.mkdirs();
 
-        var filepath =
-            Paths.get(System.getProperty("user.dir"), folder, fname).toString();
-        var file = new File(filepath);
+        String filepath = Paths.get(System.getProperty("user.dir"), folder, fname).toString();
+        var file        = new File(filepath);
 
         try {
             ImageIO.write(bi, "PNG", file);
         }
-        catch (Exception e) {
-            System.err.println(e.toString());
+        catch (IOException ioe) {
+            System.err.println(ioe.toString());
             System.exit(1);
         }
 

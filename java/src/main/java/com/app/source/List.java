@@ -22,10 +22,10 @@ public final class List implements Hittable {
 
     @Override
     public HitData hit(Vector source, Vector towards) {
-        var minHit = HitData.miss();
+        HitData minHit = HitData.miss();
 
         for (Hittable h : objects) {
-            var data = h.hit(source, towards);
+            HitData data = h.hit(source, towards);
             minHit = (data.t() < minHit.t()) ? data : minHit;
         }
 
@@ -41,7 +41,7 @@ public final class List implements Hittable {
         default:
             var iter = objects.iterator();
 
-            var bnd = iter.next().bounds();
+            Box bnd = iter.next().bounds();
 
             while (iter.hasNext()) {
                 bnd = Box.wraps(bnd, iter.next().bounds());

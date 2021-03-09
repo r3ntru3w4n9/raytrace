@@ -28,25 +28,22 @@ public final class Scene implements Hittable {
     }
 
     public Vector color_trace(Vector starting, Vector towards, int depth) {
-        var color = Vector.uniform(1.);
+        Vector color = Vector.uniform(1.);
 
         for (int d = 0; d < depth; ++d) {
             HitData data = hit(starting, towards);
 
             if (data.isHit()) {
-                Material matter = data.material();
-                var reflected   = matter.scatter(towards, data.normal());
+                Material matter  = data.material();
+                Vector reflected = matter.scatter(towards, data.normal());
 
                 color = color.mul(matter.albedo());
 
                 starting = data.point();
                 towards  = reflected;
             } else {
-                double t = .5 * (towards.unit().y() + 1.);
-                var back =
-                    Vector.uniform(1.).mul(1. -
-                                           t).add(new Vector(.5, .7,
-                                                             1.).mul(t));
+                double t    = .5 * (towards.unit().y() + 1.);
+                Vector back = Vector.uniform(1.).mul(1. - t).add(new Vector(.5, .7,                                                             1.).mul(t));
                 return color.mul(back);
             }
         }
@@ -66,7 +63,7 @@ public final class Scene implements Hittable {
         Vector v     = vertical.unit().mul(aj);
         Vector start = source.add(h).add(v);
 
-        var color = IntStream.range(0, ns).sequential().mapToObj(_i -> {
+        Vector color = IntStream.range(0, ns).sequential().mapToObj(_i -> {
             double i = ((double) x + random.nextDouble()) / dx;
             double j = ((double) y + random.nextDouble()) / dy;
 
@@ -76,7 +73,7 @@ public final class Scene implements Hittable {
             return color_trace(start, towards, depth);
         }).reduce(Vector.o(), Vector::add);
 
-        var pixel = color.div(ns).mul(255.999);
+        Vector pixel = color.div(ns).mul(255.999);
 
         return new int[] { (int) pixel.x(), (int) pixel.y(), (int) pixel.z() };
     }

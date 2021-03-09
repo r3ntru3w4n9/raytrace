@@ -32,7 +32,7 @@ public record Tree(Hittable root) implements Hittable {
     }
 
     private static Hittable recursivePartition(java.util.List<Hittable>objects) {
-        final var size = objects.size();
+        final int size = objects.size();
 
         switch (objects.size()) {
         case 0:
@@ -75,7 +75,7 @@ public record Tree(Hittable root) implements Hittable {
                 break;
             }
 
-            var half = objects.size() / 2;
+            int half = objects.size() / 2;
 
             var first = objects.subList(0, half);
             var last  = objects.subList(half, size);
@@ -113,8 +113,8 @@ class TreeNode implements Hittable {
             return HitData.miss();
         }
 
-        var leftHit  = left.hit(source, towards);
-        var rightHit = right.hit(source, towards);
+        HitData leftHit  = left.hit(source, towards);
+        HitData rightHit = right.hit(source, towards);
 
         boolean leftIsHit  = leftHit.isHit();
         boolean rightIsHit = rightHit.isHit();

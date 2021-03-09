@@ -15,9 +15,9 @@ public record Glass(Vector albedo, double blur,
     public Vector scatter(Vector input, Vector normal) {
         input  = input.unit();
         normal = normal.unit();
-        var cosine = input.dot(normal);
 
-        double ratio = cosine < 0. ? 1. / refractive : refractive;
+        double cosine = input.dot(normal);
+        double ratio  = cosine < 0. ? 1. / refractive : refractive;
 
         double sineSq   = 1. - cosine * cosine;
         double cosineSq = 1. - ratio * ratio * sineSq;
@@ -29,13 +29,13 @@ public record Glass(Vector albedo, double blur,
         Vector randBlur   = Vector.randomBall(blur);
 
         if (refract && (randDouble > schlick(Math.abs(cosine), refractive))) {
-            var first  = input.add(normal.mul(cosine));
-            var second = normal.mul(Math.sqrt(cosineSq));
+            Vector first  = input.add(normal.mul(cosine));
+            Vector second = normal.mul(Math.sqrt(cosineSq));
 
             return first.mul(ratio).sub(second).add(randBlur);
         }
 
-        var casted = normal.mul(input.dot(normal) * 2.);
+        Vector casted = normal.mul(input.dot(normal) * 2.);
 
         return randBlur.add(input).sub(casted);
     }

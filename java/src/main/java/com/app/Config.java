@@ -18,16 +18,16 @@ public final class Config {
     static Material randomMaterial() {
         var random = ThreadLocalRandom.current();
 
-        var mat = (int) (random.nextDouble() * 3.);
+        int mat = (int) (random.nextDouble() * 3.);
 
         assert 0 <= mat && mat < 3.;
-        var blur = random.nextDouble() / 2.;
+        double blur = random.nextDouble() / 2.;
 
         assert 0 <= mat && mat < 1. / 2.;
-        var refractive = random.nextDouble() + 1;
+        double refractive = random.nextDouble() + 1;
 
         assert 1. <= mat && mat < 2.;
-        var albedo = Vector.random().add(1.).div(2.);
+        Vector albedo = Vector.random().add(1.).div(2.);
 
         switch (mat) {
         case 0:
@@ -49,34 +49,33 @@ public final class Config {
     public static Scene scenes() {
         var random = ThreadLocalRandom.current();
 
-        var eye    = new Vector(13., 2., 3.);
-        var lookat = Vector.o();
-        var viewup = Vector.j();
+        Vector eye    = new Vector(13., 2., 3.);
+        Vector lookat = Vector.o();
+        Vector viewup = Vector.j();
+        Vector vision = lookat.sub(eye);
 
-        var vision = lookat.sub(eye);
+        double rad    = Math.PI * DEG / 360.;
+        double height = Math.tan(rad) * vision.length();
+        double width  = height * RATIO;
 
-        var rad = Math.PI * DEG / 360.;
-
-        var height = Math.tan(rad) * vision.length();
-        var width  = height * RATIO;
-
-        var unit = vision.unit();
-        var proj = unit.mul(viewup.dot(unit));
+        Vector unit = vision.unit();
+        Vector proj = unit.mul(viewup.dot(unit));
 
         viewup = viewup.sub(proj).unit();
-        var horizon = vision.cross(viewup).unit();
+
+        Vector horizon = vision.cross(viewup).unit();
 
         viewup  = viewup.mul(height);
         horizon = horizon.mul(width);
 
-        var list = new List();
+        List list = new List();
 
         for (int i = -11; i < 11; ++i) {
             for (int j = -11; j < 11; ++j) {
-                var iF = (double) i;
-                var jF = (double) j;
+                double iF = (double) i;
+                double jF = (double) j;
 
-                var center = new Vector(iF + .9 * random.nextDouble(), .2, jF + .9 * random.nextDouble());
+                Vector center = new Vector(iF + .9 * random.nextDouble(), .2, jF + .9 * random.nextDouble());
 
                 list.add(new Sphere(center, .2, randomMaterial()));
             }
@@ -88,9 +87,9 @@ public final class Config {
         list.add(new Sphere(new Vector(-4., 1., 0.), 1., new Matte(new Vector(.4, .2, .1))));
         list.add(new Sphere(new Vector(4., 1., 0.), 1., new Metal(new Vector(.7, .6, .5), 0.)));
 
-        var scene = new Scene(eye, lookat.sub(viewup).sub(horizon), horizon.mul(2.), viewup.mul(2.), APERTURE);
+        Scene scene = new Scene(eye, lookat.sub(viewup).sub(horizon), horizon.mul(2.), viewup.mul(2.), APERTURE);
 
-        var h = TREE ? new Tree(list) : list;
+        Hittable h = TREE ? new Tree(list) : list;
 
         scene.setList(h);
 
