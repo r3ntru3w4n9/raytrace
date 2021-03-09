@@ -2,13 +2,15 @@ package com.app.source;
 
 public record Box(Pair x, Pair y, Pair z) {
     Box wrap(Box other) {
-        return new Box(Box.largerBound(this.x, other.x), Box.largerBound(this.y, other.y),
-                Box.largerBound(this.z, other.z));
+        return new Box(Box.largerBound(this.x, other.x),
+                       Box.largerBound(this.y, other.y),
+                       Box.largerBound(this.z, other.z));
     }
 
     public Vector center() {
-        return new Vector((this.x.x() + this.x.y()) / 2., (this.y.x() + this.y.y()) / 2.,
-                (this.z.x() + this.z.y()) / 2.);
+        return new Vector((this.x.x() + this.x.y()) / 2.,
+                          (this.y.x() + this.y.y()) / 2.,
+                          (this.z.x() + this.z.y()) / 2.);
     }
 
     public Vector min() {
@@ -27,7 +29,7 @@ public record Box(Pair x, Pair y, Pair z) {
         double tMax = Double.POSITIVE_INFINITY;
 
         for (int i = 0; i < 3; ++i) {
-            double invB = 1. / towards.get(i);
+            double invB   = 1. / towards.get(i);
             double tSmall = (minimum.get(i) - source.get(i)) * invB;
             double tLarge = (maximum.get(i) - source.get(i)) * invB;
 
@@ -47,7 +49,8 @@ public record Box(Pair x, Pair y, Pair z) {
     }
 
     static Pair largerBound(Pair a, Pair b) {
-        return new Pair(a.x() < b.x() ? a.x() : b.x(), a.y() > b.y() ? a.y() : b.y());
+        return new Pair(a.x() < b.x() ? a.x() : b.x(),
+                        a.y() > b.y() ? a.y() : b.y());
     }
 
     public static Box wraps(Box a, Box b) {

@@ -80,8 +80,9 @@ public record Vector(double x, double y, double z) {
     }
 
     public Vector cross(Vector other) {
-        return new Vector(this.y * other.z - this.z * other.y, this.z * other.x - this.x * other.z,
-                this.x * other.y - this.y * other.x);
+        return new Vector(this.y * other.z - this.z * other.y,
+                          this.z * other.x - this.x * other.z,
+                          this.x * other.y - this.y * other.x);
     }
 
     public static Vector uniform(double n) {
@@ -106,7 +107,10 @@ public record Vector(double x, double y, double z) {
 
     public static Vector random() {
         var current = ThreadLocalRandom.current();
-        return new Vector(current.nextDouble(), current.nextDouble(), current.nextDouble());
+
+        return new Vector(current.nextDouble(),
+                          current.nextDouble(),
+                          current.nextDouble());
     }
 
     public static Vector randomBall(double radius) {
@@ -115,6 +119,7 @@ public record Vector(double x, double y, double z) {
             assert 0. <= random.x && random.x < 1;
             assert 0. <= random.y && random.y < 1;
             assert 0. <= random.z && random.z < 1;
+
             if (random.l2() <= 1.) {
                 return random.mul(radius);
             }

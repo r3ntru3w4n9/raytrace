@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public final class List implements Hittable {
-    private ArrayList<Hittable> objects;
+    private ArrayList<Hittable>objects;
 
     public List() {
         this(new ArrayList<Hittable>());
@@ -23,6 +23,7 @@ public final class List implements Hittable {
     @Override
     public HitData hit(Vector source, Vector towards) {
         var minHit = HitData.miss();
+
         for (Hittable h : objects) {
             var data = h.hit(source, towards);
             minHit = (data.t() < minHit.t()) ? data : minHit;
