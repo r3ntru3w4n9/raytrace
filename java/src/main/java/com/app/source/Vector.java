@@ -1,7 +1,6 @@
 package com.app.source;
 
 import java.util.concurrent.ThreadLocalRandom;
-
 public record Vector(double x, double y, double z) {
     public Vector() {
         this(0., 0., 0.);
@@ -9,14 +8,14 @@ public record Vector(double x, double y, double z) {
 
     public double get(int i) {
         switch (i) {
-        case 0:
-            return x;
+            case 0:
+                return x;
 
-        case 1:
-            return y;
+            case 1:
+                return y;
 
-        case 2:
-            return z;
+            case 2:
+                return z;
         }
 
         throw new RuntimeException();
@@ -83,9 +82,8 @@ public record Vector(double x, double y, double z) {
     }
 
     public Vector cross(Vector other) {
-        return new Vector(this.y * other.z - this.z * other.y,
-                          this.z * other.x - this.x * other.z,
-                          this.x * other.y - this.y * other.x);
+        return new Vector(this.y * other.z - this.z * other.y, this.z * other.x - this.x * other.z,
+                this.x * other.y - this.y * other.x);
     }
 
     public static Vector uniform(double n) {
@@ -111,9 +109,7 @@ public record Vector(double x, double y, double z) {
     public static Vector random() {
         var current = ThreadLocalRandom.current();
 
-        return new Vector(current.nextDouble(),
-                          current.nextDouble(),
-                          current.nextDouble());
+        return new Vector(current.nextDouble(), current.nextDouble(), current.nextDouble());
     }
 
     public static Vector randomBall(double radius) {

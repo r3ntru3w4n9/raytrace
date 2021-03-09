@@ -19,11 +19,7 @@ public final class Scene implements Hittable {
     private Hittable list;
     private double aperture;
 
-    public Scene(Vector source,
-                 Vector corner,
-                 Vector horizon,
-                 Vector vertical,
-                 double aperture) {
+    public Scene(Vector source, Vector corner, Vector horizon, Vector vertical, double aperture) {
         this(source, corner, horizon, vertical, null, aperture);
     }
 
@@ -34,16 +30,16 @@ public final class Scene implements Hittable {
             HitData data = hit(starting, towards);
 
             if (data.isHit()) {
-                Material matter  = data.material();
+                Material matter = data.material();
                 Vector reflected = matter.scatter(towards, data.normal());
 
                 color = color.mul(matter.albedo());
 
                 starting = data.point();
-                towards  = reflected;
+                towards = reflected;
             } else {
-                double t    = .5 * (towards.unit().y() + 1.);
-                Vector back = Vector.uniform(1.).mul(1. - t).add(new Vector(.5, .7,                                                             1.).mul(t));
+                double t = .5 * (towards.unit().y() + 1.);
+                Vector back = Vector.uniform(1.).mul(1. - t).add(new Vector(.5, .7, 1.).mul(t));
                 return color.mul(back);
             }
         }
@@ -59,23 +55,26 @@ public final class Scene implements Hittable {
         double ai = a[0];
         double aj = a[1];
 
-        Vector h     = horizon.unit().mul(ai);
-        Vector v     = vertical.unit().mul(aj);
+        Vector h = horizon.unit().mul(ai);
+        Vector v = vertical.unit().mul(aj);
         Vector start = source.add(h).add(v);
 
-        Vector color = IntStream.range(0, ns).sequential().mapToObj(_i -> {
-            double i = ((double) x + random.nextDouble()) / dx;
-            double j = ((double) y + random.nextDouble()) / dy;
+        Vector color = IntStream.range(0, ns)
+                               .sequential()
+                               .mapToObj(_i -> {
+                                   double i = ((double) x + random.nextDouble()) / dx;
+                                   double j = ((double) y + random.nextDouble()) / dy;
 
-            Vector end     = corner.add(horizon.mul(i).add(vertical.mul(j)));
-            Vector towards = end.sub(start);
+                                   Vector end = corner.add(horizon.mul(i).add(vertical.mul(j)));
+                                   Vector towards = end.sub(start);
 
-            return color_trace(start, towards, depth);
-        }).reduce(Vector.o(), Vector::add);
+                                   return color_trace(start, towards, depth);
+                               })
+                               .reduce(Vector.o(), Vector::add);
 
         Vector pixel = color.div(ns).mul(255.999);
 
-        return new int[] { (int) pixel.x(), (int) pixel.y(), (int) pixel.z() };
+        return new int[] {(int) pixel.x(), (int) pixel.y(), (int) pixel.z()};
     }
 
     public static double[] randomDisk(double radius) {
@@ -86,7 +85,7 @@ public final class Scene implements Hittable {
             double y = random.nextDouble();
 
             if (x * x + y * y <= 1.) {
-                return new double[] { x *radius, y *radius };
+                return new double[] {x * radius, y * radius};
             }
         }
     }

@@ -1,7 +1,5 @@
 package com.app.source;
-
-public record Sphere(Vector center, double radius,
-                     Material material) implements Hittable {
+public record Sphere(Vector center, double radius, Material material) implements Hittable {
     public Vector normal(Vector point) {
         return point.sub(center);
     }
@@ -9,13 +7,13 @@ public record Sphere(Vector center, double radius,
     @Override
     public HitData hit(Vector source, Vector towards) {
         Vector oc = normal(source);
-        double a  = towards.l2();
-        double b  = oc.dot(towards);
-        double c  = oc.l2() - radius * radius;
+        double a = towards.l2();
+        double b = oc.dot(towards);
+        double c = oc.l2() - radius * radius;
 
         double base = Math.sqrt(b * b - a * c);
-        double neg  = (-b - base) / a;
-        double pos  = (-b + base) / a;
+        double neg = (-b - base) / a;
+        double pos = (-b + base) / a;
 
         if (neg > 0) {
             Vector point = source.add(towards.mul(neg));
@@ -35,8 +33,7 @@ public record Sphere(Vector center, double radius,
         Vector min = center.sub(radius);
         Vector max = center.add(radius);
 
-        return new Box(new Pair(min.x(), max.x()),
-                       new Pair(min.y(), max.y()),
-                       new Pair(min.z(), max.z()));
+        return new Box(
+                new Pair(min.x(), max.x()), new Pair(min.y(), max.y()), new Pair(min.z(), max.z()));
     }
 }

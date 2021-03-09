@@ -5,16 +5,15 @@ import com.app.source.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 public final class Config {
-    public static final int NX          = 1200;
-    public static final int NY          = 675;
-    public static final int NS          = 100;
-    public static final int DEP         = 10;
-    public static final double DEG      = 30.;
+    public static final int NX = 1200;
+    public static final int NY = 675;
+    public static final int NS = 100;
+    public static final int DEP = 10;
+    public static final double DEG = 30.;
     public static final double APERTURE = 0.;
-    public static final boolean TREE    = true;
+    public static final boolean TREE = true;
 
     public static final double RATIO = (double) NX / (double) NY;
-
     static Material randomMaterial() {
         var random = ThreadLocalRandom.current();
 
@@ -30,17 +29,17 @@ public final class Config {
         Vector albedo = Vector.random().add(1.).div(2.);
 
         switch (mat) {
-        case 0:
-            return new Matte(albedo);
+            case 0:
+                return new Matte(albedo);
 
-        case 1:
-            return new Metal(albedo, blur);
+            case 1:
+                return new Metal(albedo, blur);
 
-        case 2:
-            return new Glass(albedo, blur, refractive);
+            case 2:
+                return new Glass(albedo, blur, refractive);
 
-        default:
-            assert false;
+            default:
+                assert false;
         }
 
         throw new RuntimeException();
@@ -49,14 +48,14 @@ public final class Config {
     public static Scene scenes() {
         var random = ThreadLocalRandom.current();
 
-        Vector eye    = new Vector(13., 2., 3.);
+        Vector eye = new Vector(13., 2., 3.);
         Vector lookat = Vector.o();
         Vector viewup = Vector.j();
         Vector vision = lookat.sub(eye);
 
-        double rad    = Math.PI * DEG / 360.;
+        double rad = Math.PI * DEG / 360.;
         double height = Math.tan(rad) * vision.length();
-        double width  = height * RATIO;
+        double width = height * RATIO;
 
         Vector unit = vision.unit();
         Vector proj = unit.mul(viewup.dot(unit));
@@ -65,7 +64,7 @@ public final class Config {
 
         Vector horizon = vision.cross(viewup).unit();
 
-        viewup  = viewup.mul(height);
+        viewup = viewup.mul(height);
         horizon = horizon.mul(width);
 
         List list = new List();
@@ -75,7 +74,8 @@ public final class Config {
                 double iF = (double) i;
                 double jF = (double) j;
 
-                Vector center = new Vector(iF + .9 * random.nextDouble(), .2, jF + .9 * random.nextDouble());
+                Vector center = new Vector(
+                        iF + .9 * random.nextDouble(), .2, jF + .9 * random.nextDouble());
 
                 list.add(new Sphere(center, .2, randomMaterial()));
             }
@@ -87,7 +87,8 @@ public final class Config {
         list.add(new Sphere(new Vector(-4., 1., 0.), 1., new Matte(new Vector(.4, .2, .1))));
         list.add(new Sphere(new Vector(4., 1., 0.), 1., new Metal(new Vector(.7, .6, .5), 0.)));
 
-        Scene scene = new Scene(eye, lookat.sub(viewup).sub(horizon), horizon.mul(2.), viewup.mul(2.), APERTURE);
+        Scene scene = new Scene(
+                eye, lookat.sub(viewup).sub(horizon), horizon.mul(2.), viewup.mul(2.), APERTURE);
 
         Hittable h = TREE ? new Tree(list) : list;
 

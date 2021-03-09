@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public final class List implements Hittable {
-    private ArrayList<Hittable>objects;
+    private ArrayList<Hittable> objects;
 
     public List() {
         this(new ArrayList<Hittable>());
@@ -35,19 +35,19 @@ public final class List implements Hittable {
     @Override
     public Box bounds() {
         switch (objects.size()) {
-        case 0:
-            throw new RuntimeException();
+            case 0:
+                throw new RuntimeException();
 
-        default:
-            var iter = objects.iterator();
+            default:
+                var iter = objects.iterator();
 
-            Box bnd = iter.next().bounds();
+                Box bnd = iter.next().bounds();
 
-            while (iter.hasNext()) {
-                bnd = Box.wraps(bnd, iter.next().bounds());
-            }
+                while (iter.hasNext()) {
+                    bnd = Box.wraps(bnd, iter.next().bounds());
+                }
 
-            return bnd;
+                return bnd;
         }
     }
 }
