@@ -9,9 +9,7 @@ public record Tree(Hittable root) implements Hittable {
 
     private enum Axis {
         X, Y, Z
-    }
-
-    private static Axis maxVar(java.util.List<Hittable>list) {
+    } private static Axis maxVar(java.util.List<Hittable>list) {
         Vector avg =
             list.stream().map(Hittable::bounds).map(Box::center).reduce(
                 new Vector(),
@@ -33,53 +31,57 @@ public record Tree(Hittable root) implements Hittable {
         }
     }
 
-    private static Hittable recursivePartition(java.util.List<Hittable>objects)
-    {
+    private static Hittable recursivePartition(java.util.List<Hittable>objects) {
         final var size = objects.size();
 
         switch (objects.size()) {
-            case 0:
-                throw new RuntimeException();
-            case 1:
-                return objects.get(0);
-            case 2:
-                return new TreeNode(objects.get(0), objects.get(1));
-            default:
+        case 0:
+            throw new RuntimeException();
 
-                switch (maxVar(objects)) {
-                    case X:
-                        Collections.sort(objects,
-                                         (a,
-                                          b) -> Double.compare(a.bounds().center()
-                                                               .x(),
-                                                               b.bounds().center()
-                                                               .x()));
-                        break;
-                    case Y:
-                        Collections.sort(objects,
-                                         (a,
-                                          b) -> Double.compare(a.bounds().center()
-                                                               .y(),
-                                                               b.bounds().center()
-                                                               .y()));
-                        break;
-                    case Z:
-                        Collections.sort(objects,
-                                         (a,
-                                          b) -> Double.compare(a.bounds().center()
-                                                               .z(),
-                                                               b.bounds().center()
-                                                               .z()));
-                        break;
-                }
+        case 1:
+            return objects.get(0);
 
-                var half = objects.size() / 2;
+        case 2:
+            return new TreeNode(objects.get(0), objects.get(1));
 
-                var first = objects.subList(0, half);
-                var last  = objects.subList(half, size);
+        default:
 
-                return new TreeNode(recursivePartition(first),
-                                    recursivePartition(last));
+            switch (maxVar(objects)) {
+            case X:
+                Collections.sort(objects,
+                                 (a,
+                                  b) -> Double.compare(a.bounds().center()
+                                                       .x(),
+                                                       b.bounds().center()
+                                                       .x()));
+                break;
+
+            case Y:
+                Collections.sort(objects,
+                                 (a,
+                                  b) -> Double.compare(a.bounds().center()
+                                                       .y(),
+                                                       b.bounds().center()
+                                                       .y()));
+                break;
+
+            case Z:
+                Collections.sort(objects,
+                                 (a,
+                                  b) -> Double.compare(a.bounds().center()
+                                                       .z(),
+                                                       b.bounds().center()
+                                                       .z()));
+                break;
+            }
+
+            var half = objects.size() / 2;
+
+            var first = objects.subList(0, half);
+            var last  = objects.subList(half, size);
+
+            return new TreeNode(recursivePartition(first),
+                                recursivePartition(last));
         }
     }
 

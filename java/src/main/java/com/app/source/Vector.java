@@ -9,13 +9,16 @@ public record Vector(double x, double y, double z) {
 
     public double get(int i) {
         switch (i) {
-            case 0:
-                return x;
-            case 1:
-                return y;
-            case 2:
-                return z;
+        case 0:
+            return x;
+
+        case 1:
+            return y;
+
+        case 2:
+            return z;
         }
+
         throw new RuntimeException();
     }
 

@@ -19,9 +19,9 @@ public record Glass(Vector albedo, double blur,
 
         double ratio = cosine < 0. ? 1. / refractive : refractive;
 
-        double  sineSq   = 1. - cosine * cosine;
-        double  cosineSq = 1. - ratio * ratio * sineSq;
-        boolean refract  = cosine <= 0. || cosineSq >= 0.;
+        double sineSq   = 1. - cosine * cosine;
+        double cosineSq = 1. - ratio * ratio * sineSq;
+        boolean refract = cosine <= 0. || cosineSq >= 0.;
 
         var random = ThreadLocalRandom.current();
 

@@ -35,7 +35,7 @@ public final class App {
 
         for (var data : list) {
             var pair = data.pair;
-            var l    = (int[])data.list;
+            var l    = (int[]) data.list;
 
             var color = new Color(l[0], l[1], l[2]);
             bi.setRGB(pair.getKey(),
@@ -56,10 +56,12 @@ public final class App {
 
         try {
             ImageIO.write(bi, "PNG", file);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             System.err.println(e.toString());
             System.exit(1);
         }
+
         System.out.println("Finished");
         System.exit(0);
     }

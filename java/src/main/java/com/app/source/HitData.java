@@ -6,9 +6,9 @@ public record HitData(double t, Vector point, Vector normal,
         this(t, null, null, null);
     }
 
-    public static HitData hit(double   t,
-                              Vector   point,
-                              Vector   normal,
+    public static HitData hit(double t,
+                              Vector point,
+                              Vector normal,
                               Material matter) {
         return new HitData(t, point, normal, matter);
     }

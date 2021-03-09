@@ -42,14 +42,15 @@ public final class Scene implements Hittable {
                 starting = data.point();
                 towards  = reflected;
             } else {
-                double t    = .5 * (towards.unit().y() + 1.);
-                var    back =
+                double t = .5 * (towards.unit().y() + 1.);
+                var back =
                     Vector.uniform(1.).mul(1. -
                                            t).add(new Vector(.5, .7,
                                                              1.).mul(t));
                 return color.mul(back);
             }
         }
+
         return Vector.o();
     }
 
@@ -66,8 +67,8 @@ public final class Scene implements Hittable {
         Vector start = source.add(h).add(v);
 
         var color = IntStream.range(0, ns).sequential().mapToObj(_i -> {
-            double i = ((double)x + random.nextDouble()) / dx;
-            double j = ((double)y + random.nextDouble()) / dy;
+            double i = ((double) x + random.nextDouble()) / dx;
+            double j = ((double) y + random.nextDouble()) / dy;
 
             Vector end     = corner.add(horizon.mul(i).add(vertical.mul(j)));
             Vector towards = end.sub(start);
@@ -77,7 +78,7 @@ public final class Scene implements Hittable {
 
         var pixel = color.div(ns).mul(255.999);
 
-        return new int[] { (int)pixel.x(), (int)pixel.y(), (int)pixel.z() };
+        return new int[] { (int) pixel.x(), (int) pixel.y(), (int) pixel.z() };
     }
 
     public static double[] randomDisk(double radius) {

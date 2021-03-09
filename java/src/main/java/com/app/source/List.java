@@ -28,23 +28,26 @@ public final class List implements Hittable {
             var data = h.hit(source, towards);
             minHit = (data.t() < minHit.t()) ? data : minHit;
         }
+
         return minHit;
     }
 
     @Override
     public Box bounds() {
         switch (objects.size()) {
-            case 0:
-                throw new RuntimeException();
-            default:
-                var iter = objects.iterator();
+        case 0:
+            throw new RuntimeException();
 
-                var bnd = iter.next().bounds();
+        default:
+            var iter = objects.iterator();
 
-                while (iter.hasNext()) {
-                    bnd = Box.wraps(bnd, iter.next().bounds());
-                }
-                return bnd;
+            var bnd = iter.next().bounds();
+
+            while (iter.hasNext()) {
+                bnd = Box.wraps(bnd, iter.next().bounds());
+            }
+
+            return bnd;
         }
     }
 }
