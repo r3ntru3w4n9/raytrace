@@ -54,10 +54,7 @@ Hittable Scn_Hittable(const Scene* scene);
 // @param towards The direction of the ray.
 // @param depth The remaining depth (bounces) to track.
 // @return The resulting color from the reflections
-Vector Scn_trace(Scene scene,
-                       Vector source,
-                       Vector towards,
-                       unsigned* seed);
+Vector Scn_trace(Scene scene, Vector source, Vector towards, unsigned* seed);
 
 // Determine the pixel color given the scene and the pixel location.
 // @param scene The scene to use.
