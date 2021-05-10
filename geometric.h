@@ -233,7 +233,8 @@ Vector Vec_rand_r(unsigned* seed);
 // @return A random vector in a ball.
 Vector Vec_rand_ball(double radius, unsigned* seed);
 
-// Converts a vector to a pixel. Scales the range from [0, 1) to [0, 255] integer.
+// Converts a vector to a pixel. Scales the range from [0, 1) to [0, 255]
+// integer.
 // @param vec Vector to transform.
 // @return A pixel (r, g, b) in the range [0, 255].
 // @see Pixel
