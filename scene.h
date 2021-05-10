@@ -46,7 +46,7 @@ typedef struct Scene {
 // @param scene Scene to convert.
 // Either scene lives on the heap or has static lifetime.
 // @return The Hittable object that stores a Scene
-Hittable SceneAsHittable(const Scene* scene);
+Hittable Scn_Hittable(const Scene* scene);
 
 // Tracks the color of a path.
 // @param scene The scene to track.
@@ -54,7 +54,7 @@ Hittable SceneAsHittable(const Scene* scene);
 // @param towards The direction of the ray.
 // @param depth The remaining depth (bounces) to track.
 // @return The resulting color from the reflections
-Vector SceneColorTrace(Scene scene,
+Vector Scn_trace(Scene scene,
                        Vector source,
                        Vector towards,
                        unsigned* seed);
@@ -64,4 +64,4 @@ Vector SceneColorTrace(Scene scene,
 // @param x The X position of the pixel. x is smaller than the width.
 // @param y The Y position of the pixel. y is smaller than the height.
 // @return The pixel calculated.
-Pixel SceneColor(Scene scene, int x, int y, unsigned* seed);
+Pixel Scn_color(Scene scene, int x, int y, unsigned* seed);

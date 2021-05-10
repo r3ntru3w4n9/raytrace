@@ -16,4 +16,4 @@ typedef struct Pixel {
 // @param px Pixel to transform.
 // @return A vector (x, y, z) in the range [0, 1).
 // @see Vector
-struct Vector Px2Vec(Pixel px);
+struct Vector Px_2Vec(Pixel px);

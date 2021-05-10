@@ -7,17 +7,17 @@
 #include "macro.h"
 #include "pixel.h"
 
-Pair PairOrdered(double x, double y) {
+Pair Pair_ordered(double x, double y) {
     return (x <= y) ? (Pair){x, y} : (Pair){y, x};
 }
 
-bool IsOrdered(Pair pair) {
+bool Pair_is_ordered(Pair pair) {
     return pair.x <= pair.y;
 }
 
-Pair PairWraps(Pair a, Pair b) {
-    assert(IsOrdered(a));
-    assert(IsOrdered(b));
+Pair Pair_wraps(Pair a, Pair b) {
+    assert(Pair_is_ordered(a));
+    assert(Pair_is_ordered(b));
 
     double lower = (a.x <= b.x) ? a.x : b.x;
     double higher = (a.y >= b.y) ? a.y : b.y;
@@ -25,23 +25,23 @@ Pair PairWraps(Pair a, Pair b) {
     return (Pair){lower, higher};
 }
 
-Pair PairRand(unsigned* seed) {
+Pair Pair_rand_r(unsigned* seed) {
     return (Pair){
-        .x = GENF(seed),
-        .y = GENF(seed),
+        .x = genfloat(seed),
+        .y = genfloat(seed),
     };
 }
 
-Pair PairRandDisk(double radius, unsigned* seed) {
+Pair Pair_rand_disk(double radius, unsigned* seed) {
     forever {
-        Pair pair = PairRand(seed);
+        Pair pair = Pair_rand_r(seed);
         if (pair.x * pair.x + pair.y * pair.y <= 1) {
             return (Pair){pair.x * radius, pair.y * radius};
         }
     }
 }
 
-double VecDim(Vector vec, int dim) {
+double Vec_dim(Vector vec, int dim) {
     switch (dim) {
         case 0:
             return vec.x;
@@ -54,89 +54,89 @@ double VecDim(Vector vec, int dim) {
     }
 }
 
-bool VecEq(Vector a, Vector b) {
+bool Vec_eq(Vector a, Vector b) {
     return a.x == b.x && a.y == b.y && a.z == b.z;
 }
 
-Vector VecAdd(Vector a, Vector b) {
+Vector Vec_add(Vector a, Vector b) {
     return (Vector){a.x + b.x, a.y + b.y, a.z + b.z};
 }
 
-Vector VecSub(Vector a, Vector b) {
+Vector Vec_sub(Vector a, Vector b) {
     return (Vector){a.x - b.x, a.y - b.y, a.z - b.z};
 }
 
-Vector VecMul(Vector a, Vector b) {
+Vector Vec_mul(Vector a, Vector b) {
     return (Vector){a.x * b.x, a.y * b.y, a.z * b.z};
 }
 
-Vector VecDiv(Vector a, Vector b) {
-    assert(VecAll(b));
+Vector Vec_div(Vector a, Vector b) {
+    assert(Vec_all(b));
     return (Vector){a.x / b.x, a.y / b.y, a.z / b.z};
 }
 
-Vector VecAddS(Vector vec, double s) {
+Vector Vec_add_s(Vector vec, double s) {
     return (Vector){vec.x + s, vec.y + s, vec.z + s};
 }
 
-Vector VecSubS(Vector vec, double s) {
+Vector Vec_sub_s(Vector vec, double s) {
     return (Vector){vec.x - s, vec.y - s, vec.z - s};
 }
 
-Vector VecMulS(Vector vec, double s) {
+Vector Vec_mul_s(Vector vec, double s) {
     return (Vector){vec.x * s, vec.y * s, vec.z * s};
 }
 
-Vector VecDivS(Vector vec, double s) {
+Vector Vec_div_s(Vector vec, double s) {
     assert(s != 0);
     return (Vector){vec.x / s, vec.y / s, vec.z / s};
 }
 
-void VecIAdd(Vector* restrict a, Vector b) {
+void Vec_iadd(Vector* restrict a, Vector b) {
     a->x += b.x;
     a->y += b.y;
     a->z += b.z;
 }
 
-void VecISub(Vector* restrict a, Vector b) {
+void Vec_isub(Vector* restrict a, Vector b) {
     a->x -= b.x;
     a->y -= b.y;
     a->z -= b.z;
 }
 
-void VecIMul(Vector* restrict a, Vector b) {
+void Vec_imul(Vector* restrict a, Vector b) {
     a->x *= b.x;
     a->y *= b.y;
     a->z *= b.z;
 }
 
-void VecIDiv(Vector* restrict a, Vector b) {
-    assert(VecAll(b));
+void Vec_idiv(Vector* restrict a, Vector b) {
+    assert(Vec_all(b));
 
     a->x /= b.x;
     a->y /= b.y;
     a->z /= b.z;
 }
 
-void VecIAddS(Vector* restrict vec, double s) {
+void Vec_iadd_s(Vector* restrict vec, double s) {
     vec->x += s;
     vec->y += s;
     vec->z += s;
 }
 
-void VecISubS(Vector* restrict vec, double s) {
+void Vec_isub_s(Vector* restrict vec, double s) {
     vec->x -= s;
     vec->y -= s;
     vec->z -= s;
 }
 
-void VecIMulS(Vector* restrict vec, double s) {
+void Vec_imul_s(Vector* restrict vec, double s) {
     vec->x *= s;
     vec->y *= s;
     vec->z *= s;
 }
 
-void VecIDivS(Vector* restrict vec, double s) {
+void Vec_idiv_s(Vector* restrict vec, double s) {
     assert(s != 0);
 
     vec->x /= s;
@@ -144,7 +144,7 @@ void VecIDivS(Vector* restrict vec, double s) {
     vec->z /= s;
 }
 
-Vector VecCross(Vector a, Vector b) {
+Vector Vec_cross(Vector a, Vector b) {
     // cross(a, b) will utilize three determinants
     return (Vector){
         .x = a.y * b.z - a.z * b.y,
@@ -153,81 +153,81 @@ Vector VecCross(Vector a, Vector b) {
     };
 }
 
-double VecDot(Vector a, Vector b) {
+double Vec_dot(Vector a, Vector b) {
     return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
-double VecL2(Vector vec) {
-    return VecDot(vec, vec);
+double Vec_l2(Vector vec) {
+    return Vec_dot(vec, vec);
 }
 
-double VecLen(Vector vec) {
-    return sqrt(VecL2(vec));
+double Vec_len(Vector vec) {
+    return sqrt(Vec_l2(vec));
 }
 
-Vector VecUnit(Vector vec) {
-    double length = VecLen(vec);
-    return VecDivS(vec, length);
+Vector Vec_unit(Vector vec) {
+    double length = Vec_len(vec);
+    return Vec_div_s(vec, length);
 }
 
-Vector VecSqrt(Vector vec) {
+Vector Vec_sqrt(Vector vec) {
     return (Vector){sqrt(vec.x), sqrt(vec.y), sqrt(vec.z)};
 }
 
-Vector VecAbs(Vector vec) {
+Vector Vec_abs(Vector vec) {
     return (Vector){fabs(vec.x), fabs(vec.y), fabs(vec.z)};
 }
 
-bool VecNaN(Vector vec) {
+bool Vec_NaN(Vector vec) {
     return isnan(vec.x) && isnan(vec.y) && isnan(vec.z);
 }
 
-bool VecAll(Vector vec) {
+bool Vec_all(Vector vec) {
     return vec.x != 0 && vec.y != 0 && vec.z != 0;
 }
 
-bool VecAny(Vector vec) {
+bool Vec_any(Vector vec) {
     return vec.x != 0 || vec.y != 0 || vec.z != 0;
 }
 
-Vector VecUniform(double n) {
+Vector Vec_from(double n) {
     return (Vector){n, n, n};
 }
 
-Vector VecO(void) {
+Vector Vec_o(void) {
     return (Vector){0, 0, 0};
 }
 
-Vector VecI(void) {
+Vector Vec_i(void) {
     return (Vector){1, 0, 0};
 }
 
-Vector VecJ(void) {
+Vector Vec_j(void) {
     return (Vector){0, 1, 0};
 }
 
-Vector VecK(void) {
+Vector Vec_k(void) {
     return (Vector){0, 0, 1};
 }
 
-Vector VecRand(unsigned* seed) {
+Vector Vec_rand_r(unsigned* seed) {
     return (Vector){
-        .x = GENF(seed),
-        .y = GENF(seed),
-        .z = GENF(seed),
+        .x = genfloat(seed),
+        .y = genfloat(seed),
+        .z = genfloat(seed),
     };
 }
 
-Vector VecRandBall(double radius, unsigned* seed) {
+Vector Vec_rand_ball(double radius, unsigned* seed) {
     forever {
-        Vector vec = VecRand(seed);
-        if (VecL2(vec) <= 1) {
-            return VecMulS(vec, radius);
+        Vector vec = Vec_rand_r(seed);
+        if (Vec_l2(vec) <= 1) {
+            return Vec_mul_s(vec, radius);
         }
     }
 }
 
-Pixel Vec2Px(Vector vec) {
+Pixel Vec_2Px(Vector vec) {
     assert(vec.x >= 0);
     assert(vec.x < 1);
     assert(vec.y >= 0);
@@ -242,16 +242,16 @@ Pixel Vec2Px(Vector vec) {
     };
 }
 
-Box MakeBox(double x1, double x2, double y1, double y2, double z1, double z2) {
+Box Box_make(double x1, double x2, double y1, double y2, double z1, double z2) {
     // X, Y, Z are ordered pairs.
     return (Box){
-        .x = PairOrdered(x1, x2),
-        .y = PairOrdered(y1, y2),
-        .z = PairOrdered(z1, z2),
+        .x = Pair_ordered(x1, x2),
+        .y = Pair_ordered(y1, y2),
+        .z = Pair_ordered(z1, z2),
     };
 }
 
-bool ThroughBox(Box box, Vector source, Vector towards) {
+bool Box_is_through(Box box, Vector source, Vector towards) {
     Vector min = (Vector){box.x.x, box.y.x, box.z.x};
     Vector max = (Vector){box.x.y, box.y.y, box.z.y};
 
@@ -262,13 +262,13 @@ bool ThroughBox(Box box, Vector source, Vector towards) {
 
     // TODO: explain why this works.
     for (int i = 0; i < 3; ++i) {
-        double inv_b = 1. / VecDim(towards, i);
+        double inv_b = 1. / Vec_dim(towards, i);
 
-        double t_small = (VecDim(min, i) - VecDim(source, i)) * inv_b;
-        double t_large = (VecDim(max, i) - VecDim(source, i)) * inv_b;
+        double t_small = (Vec_dim(min, i) - Vec_dim(source, i)) * inv_b;
+        double t_large = (Vec_dim(max, i) - Vec_dim(source, i)) * inv_b;
 
         if (inv_b < 0) {
-            SWAP(double, t_small, t_large);
+            swap(double, t_small, t_large);
         }
 
         assert(t_small < t_large);
@@ -285,7 +285,7 @@ bool ThroughBox(Box box, Vector source, Vector towards) {
     return t_min < t_max;
 }
 
-Vector BoxCenter(Box box) {
+Vector Box_center(Box box) {
     return (Vector){
         .x = (box.x.x + box.x.y) / 2.,
         .y = (box.y.x + box.y.y) / 2.,
@@ -293,10 +293,10 @@ Vector BoxCenter(Box box) {
     };
 }
 
-Box BoxWraps(Box a, Box b) {
+Box Box_wraps(Box a, Box b) {
     return (Box){
-        .x = PairWraps(a.x, b.x),
-        .y = PairWraps(a.y, b.y),
-        .z = PairWraps(a.z, b.z),
+        .x = Pair_wraps(a.x, b.x),
+        .y = Pair_wraps(a.y, b.y),
+        .z = Pair_wraps(a.z, b.z),
     };
 }

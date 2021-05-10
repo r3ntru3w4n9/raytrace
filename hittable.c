@@ -7,48 +7,48 @@
 
 #include "macro.h"
 
-HitData HittableHit(const Hittable ht, Vector source, Vector towards) {
+HitData Hittable_hit(const Hittable ht, Vector source, Vector towards) {
     return ht.hit(ht.object, source, towards);
 }
 
-Box HittableBounds(const Hittable ht) {
+Box Hittable_bounds(const Hittable ht) {
     return ht.bounds(ht.object);
 }
 
-bool HasHit(const HitData hd) {
+bool HitData_has_hit(const HitData hd) {
     return hd.t != INFINITY;
 }
 
-HitData Hit(double t, Vector point, Vector normal, Material mat) {
+HitData HitData_hit(double t, Vector point, Vector normal, Material mat) {
     return (HitData){t, point, normal, mat};
 }
 
-HitData Miss(void) {
+HitData HitData_miss(void) {
     // Other values are default initialized.
     return (HitData){.t = INFINITY};
 }
 
-HitList MakeHitList(int length) {
+HitList HitList_make(int length) {
     return (HitList){
         .list = calloc(length, sizeof(HitList)),
         .length = length,
     };
 }
 
-Hittable* HitListAt(HitList hl, int index) {
+Hittable* HitList_getitem(HitList hl, int index) {
     return hl.list + index;
 }
 
 // HitListHit is the implementation of hit for HitList.
-static HitData HitListHit(const void* hl, Vector source, Vector towards) {
+static HitData HitList_hit(const void* hl, Vector source, Vector towards) {
     const HitList* hitlist = hl;
 
-    towards = VecUnit(towards);
-    HitData closest = Miss();
+    towards = Vec_unit(towards);
+    HitData closest = HitData_miss();
 
     for (int i = 0; i < hitlist->length; ++i) {
-        const Hittable* hittable = HitListAt(*hitlist, i);
-        HitData hitdata = HittableHit(*hittable, source, towards);
+        const Hittable* hittable = HitList_getitem(*hitlist, i);
+        HitData hitdata = Hittable_hit(*hittable, source, towards);
         if (hitdata.t < closest.t) {
             closest = hitdata;
         }
@@ -57,15 +57,15 @@ static HitData HitListHit(const void* hl, Vector source, Vector towards) {
 }
 
 // HitListBounds is the implementation of bounds for HitList.
-static Box HitListBounds(const void* hl) {
+static Box HitList_bounds(const void* hl) {
     const HitList* hitlist = hl;
     int length = hitlist->length;
 
     if (length) {
         Hittable* list = hitlist->list;
-        Box bounds = HittableBounds(list[0]);
+        Box bounds = Hittable_bounds(list[0]);
         for (int i = 1; i < length; ++i) {
-            bounds = BoxWraps(bounds, HittableBounds(list[i]));
+            bounds = Box_wraps(bounds, Hittable_bounds(list[i]));
         }
         return bounds;
     } else {
@@ -73,84 +73,87 @@ static Box HitListBounds(const void* hl) {
     }
 }
 
-Hittable HitListAsHittable(const HitList* hl) {
-    return (Hittable){.object = hl, .hit = HitListHit, .bounds = HitListBounds};
+Hittable HitList_Hittable(const HitList* hl) {
+    return (Hittable){
+        .object = hl, .hit = HitList_hit, .bounds = HitList_bounds};
 }
 
-HitNode MakeHitNode(Hittable left, Hittable right) {
+HitNode HitNode_make(Hittable left, Hittable right) {
     assert(left.object != right.object);
     return (HitNode){left, right};
 }
 
-HitNode* NewHitNode(Hittable left, Hittable right) {
+HitNode* HitNode_new(Hittable left, Hittable right) {
     HitNode* hn = malloc(sizeof(HitNode));
-    *hn = MakeHitNode(left, right);
+    *hn = HitNode_make(left, right);
     return hn;
 }
 
 // HitNodeHit is the implementation of hit for HitNode.
-static HitData HitNodeHit(const void* hn, Vector source, Vector towards) {
+static HitData HitNode_hit(const void* hn, Vector source, Vector towards) {
     const HitNode* hitnode = hn;
 
     const Hittable left = hitnode->left;
     const Hittable right = hitnode->right;
 
-    Box lb = HittableBounds(left);
-    Box rb = HittableBounds(right);
+    Box lb = Hittable_bounds(left);
+    Box rb = Hittable_bounds(right);
 
     // Are the boxes hit by the ray?
-    bool lb_hit = ThroughBox(lb, source, towards);
-    bool rb_hit = ThroughBox(rb, source, towards);
+    bool lb_hit = Box_is_through(lb, source, towards);
+    bool rb_hit = Box_is_through(rb, source, towards);
 
-    HitData left_hit = lb_hit ? HittableHit(left, source, towards) : Miss();
-    HitData right_hit = rb_hit ? HittableHit(left, source, towards) : Miss();
+    HitData left_hit =
+        lb_hit ? Hittable_hit(left, source, towards) : HitData_miss();
+    HitData right_hit =
+        rb_hit ? Hittable_hit(left, source, towards) : HitData_miss();
 
     return (left_hit.t <= right_hit.t) ? left_hit : right_hit;
 }
 
 // HitNodeBounds is the implementation of bounds for HitNode.
-static Box HitNodeBounds(const void* hn) {
+static Box HitNode_bounds(const void* hn) {
     const HitNode* hitnode = hn;
 
-    Box lb = HittableBounds(hitnode->left);
-    Box rb = HittableBounds(hitnode->right);
+    Box lb = Hittable_bounds(hitnode->left);
+    Box rb = Hittable_bounds(hitnode->right);
 
-    return BoxWraps(lb, rb);
+    return Box_wraps(lb, rb);
 }
 
-Hittable HitNodeAsHittable(const HitNode* hn) {
+Hittable HitNode_Hittable(const HitNode* hn) {
     return (Hittable){
         .object = hn,
-        .hit = HitNodeHit,
-        .bounds = HitNodeBounds,
+        .hit = HitNode_hit,
+        .bounds = HitNode_bounds,
     };
 }
 
 // Return the center of a hittable.
-static Vector HittableCenter(Hittable h) {
-    Box bounds = HittableBounds(h);
-    return BoxCenter(bounds);
+static Vector Hittable_center(Hittable h) {
+    Box bounds = Hittable_bounds(h);
+    return Box_center(bounds);
 }
 
 // Compare Hittable along the X axis.
 static int cmp_x(const void* a, const void* b) {
     const Hittable* ha = (Hittable*)a;
     const Hittable* hb = (Hittable*)b;
-    return HittableCenter(*ha).x - HittableCenter(*hb).x;
+    return Hittable_center(*ha).x - Hittable_center(*hb).x;
 }
 
 // Compare Hittable along the Y axis.
 static int cmp_y(const void* a, const void* b) {
     const Hittable* ha = (Hittable*)a;
     const Hittable* hb = (Hittable*)b;
-    return HittableCenter(*ha).y - HittableCenter(*hb).y;
+    return Hittable_center(*ha).y - Hittable_center(*hb).y;
 }
 
 // Compare Hittable along the Z axis.
 static int cmp_z(const void* a, const void* b) {
     const Hittable* ha = (Hittable*)a;
     const Hittable* hb = (Hittable*)b;
-    return HittableCenter(*ha).z - HittableCenter(*hb).z;
+    return Hittable_center(*ha).z - Hittable_center(*hb).z;
 }
 
 // Partition the list according to how far apart each objects are along each
@@ -165,23 +168,23 @@ static Hittable partition(Hittable* list, int length) {
         case 1:
             return list[0];
         case 2: {
-            return HitNodeAsHittable(NewHitNode(list[0], list[1]));
+            return HitNode_Hittable(HitNode_new(list[0], list[1]));
         }
         default:
             break;
     }
 
-    Vector avg = VecO();
+    Vector avg = Vec_o();
     for (int i = 0; i < length; ++i) {
-        VecIAdd(&avg, HittableCenter(list[i]));
+        Vec_iadd(&avg, Hittable_center(list[i]));
     }
-    VecIDivS(&avg, length);
+    Vec_idiv_s(&avg, length);
 
     // Variance along different axises.
     double varx, vary, varz;
     varx = vary = varz = 0.;
     for (int i = 0; i < length; ++i) {
-        Vector center = HittableCenter(list[i]);
+        Vector center = Hittable_center(list[i]);
         varx += fabs(center.x - avg.x);
         vary += fabs(center.y - avg.y);
         varz += fabs(center.z - avg.z);
@@ -204,10 +207,10 @@ static Hittable partition(Hittable* list, int length) {
     Hittable left = partition(list, half);
     Hittable right = partition(list + half, length - half);
 
-    return HitNodeAsHittable(NewHitNode(left, right));
+    return HitNode_Hittable(HitNode_new(left, right));
 }
 
-HitTree MakeHitTree(HitList hl) {
+HitTree HitTree_make(HitList hl) {
     Hittable* list = hl.list;
     int length = hl.length;
 
@@ -219,21 +222,21 @@ HitTree MakeHitTree(HitList hl) {
 }
 
 // HitTreeHit is the implementation of hit for HitTree.
-static HitData HitTreeHit(const void* ht, Vector source, Vector towards) {
+static HitData HitTree_hit(const void* ht, Vector source, Vector towards) {
     const HitTree* hittree = ht;
-    return HittableHit(hittree->root, source, towards);
+    return Hittable_hit(hittree->root, source, towards);
 }
 
 // HitTreeBounds is the implementation of bounds for HitTree.
-static Box HitTreeBounds(const void* ht) {
+static Box HitTree_bounds(const void* ht) {
     const HitTree* hittree = ht;
-    return HittableBounds(hittree->root);
+    return Hittable_bounds(hittree->root);
 }
 
-Hittable HitTreeAsHittable(const HitTree* ht) {
+Hittable HitTree_Hittable(const HitTree* ht) {
     return (Hittable){
         .object = ht,
-        .hit = HitTreeHit,
-        .bounds = HitTreeBounds,
+        .hit = HitTree_hit,
+        .bounds = HitTree_bounds,
     };
 }

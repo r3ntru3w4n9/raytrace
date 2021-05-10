@@ -27,12 +27,12 @@ typedef struct Material {
 // @param input The direction of the incoming ray.
 // @param normal The direction of the surface where the ray hits.
 // @return The direction of the reflected ray.
-Vector MatScatter(Material mat, Vector input, Vector normal, unsigned* seed);
+Vector Mat_scatter(Material mat, Vector input, Vector normal, unsigned* seed);
 
 // Calls albedo for Material.
 // @param mat The material in use.
 // @return The albedo. Albedo_i is in the range [0, 1]
-Vector MatAlbedo(Material mat);
+Vector Mat_albedo(Material mat);
 
 // Matte is a Lambertian material.
 typedef struct Matte {
@@ -43,7 +43,7 @@ typedef struct Matte {
 // Convert Matte to Material.
 // @param matte Matte to convert.
 // @return The material object that holds matte.
-Material MatteAsMaterial(const Matte* matte);
+Material Matte_Mat(const Matte* matte);
 
 // Metal is like a mirror.
 typedef struct Metal {
@@ -56,7 +56,7 @@ typedef struct Metal {
 // Convert Metal to Material.
 // @param metal Metal to convert.
 // @return The material object that holds metal.
-Material MetalAsMaterial(const Metal* metal);
+Material Metal_Mat(const Metal* metal);
 
 // Glass not only reflects but also refracts.
 typedef struct Glass {
@@ -71,4 +71,4 @@ typedef struct Glass {
 // Convert Glass to Material.
 // @param glass Glass to convert.
 // @return The material object that holds glass.
-Material GlassAsMaterial(const Glass* glass);
+Material Glass_Mat(const Glass* glass);

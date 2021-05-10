@@ -7,78 +7,75 @@
 #include "material.h"
 
 // SceneHit is the implementation of hit for Scene.
-static HitData SceneHit(const void* sc, Vector source, Vector towards) {
+static HitData Scn_hit(const void* sc, Vector source, Vector towards) {
     const Scene* scene = sc;
-    return HittableHit(scene->hittable, source, towards);
+    return Hittable_hit(scene->hittable, source, towards);
 }
 
 // SceneBounds is the implementation of bounds for Scene.
-static Box SceneBounds(const void* sc) {
+static Box Scn_bounds(const void* sc) {
     const Scene* scene = sc;
-    return HittableBounds(scene->hittable);
+    return Hittable_bounds(scene->hittable);
 }
 
-Hittable SceneAsHittable(const Scene* scene) {
-    return (Hittable){.object = scene, .hit = SceneHit, .bounds = SceneBounds};
+Hittable Scn_Hittable(const Scene* scene) {
+    return (Hittable){.object = scene, .hit = Scn_hit, .bounds = Scn_bounds};
 }
 
-Vector SceneColorTrace(Scene scene,
-                       Vector source,
-                       Vector towards,
-                       unsigned* seed) {
-    Vector color = VecUniform(1.);
-    Hittable sh = SceneAsHittable(&scene);
+Vector Scn_trace(Scene scene, Vector source, Vector towards, unsigned* seed) {
+    Vector color = Vec_from(1.);
+    Hittable sh = Scn_Hittable(&scene);
 
     for (int d = 0; d < scene.cfg.depth; ++d) {
-        HitData hd = HittableHit(sh, source, towards);
+        HitData hd = Hittable_hit(sh, source, towards);
 
-        if (HasHit(hd)) {
+        if (HitData_has_hit(hd)) {
             Material mat = hd.mat;
-            Vector reflected = MatScatter(mat, towards, hd.normal, seed);
-            VecIMul(&color, MatAlbedo(mat));
+            Vector reflected = Mat_scatter(mat, towards, hd.normal, seed);
+            Vec_imul(&color, Mat_albedo(mat));
             source = hd.point;
             towards = reflected;
         } else {
-            double t = .5 * VecUnit(towards).y + 1.;
-            Vector bg = VecAdd(VecUniform(1. - t), (Vector){.5 * t, .7 * t, t});
-            return VecMul(color, bg);
+            double t = .5 * Vec_unit(towards).y + 1.;
+            Vector bg = Vec_add(Vec_from(1. - t), (Vector){.5 * t, .7 * t, t});
+            return Vec_mul(color, bg);
         }
     }
-    return VecO();
+    return Vec_o();
 }
 
-Pixel SceneColor(Scene scene, int x, int y, unsigned* seed) {
+Pixel Scn_color(Scene scene, int x, int y, unsigned* seed) {
     assert(x >= 0);
     assert(x < scene.cfg.width);
     assert(y >= 0);
     assert(y < scene.cfg.height);
 
-    Pair aij = PairRandDisk(scene.cam.aperture, seed);
+    Pair aij = Pair_rand_disk(scene.cam.aperture, seed);
     double ai = aij.x;
     double aj = aij.y;
 
-    Vector h = VecMulS(VecUnit(scene.cam.horiz), ai);
-    Vector v = VecMulS(VecUnit(scene.cam.vertic), aj);
-    Vector start = VecAdd(scene.cam.source, VecAdd(h, v));
+    Vector h = Vec_mul_s(Vec_unit(scene.cam.horiz), ai);
+    Vector v = Vec_mul_s(Vec_unit(scene.cam.vertic), aj);
+    Vector start = Vec_add(scene.cam.source, Vec_add(h, v));
 
-    Vector color = VecO();
+    Vector color = Vec_o();
     for (int s = 0; s < scene.cfg.samples; ++s) {
-        double i = (double)(x + GENF(seed)) / scene.cfg.width;
-        double j = (double)(y + GENF(seed)) / scene.cfg.height;
+        double i = (double)(x + genfloat(seed)) / scene.cfg.width;
+        double j = (double)(y + genfloat(seed)) / scene.cfg.height;
 
         // Difference between the endpoint of the vector and the corner
-        Vector h = VecMulS(scene.cam.horiz, i);
-        Vector v = VecMulS(scene.cam.vertic, j);
-        Vector fc = VecAdd(h, v);
+        Vector h = Vec_mul_s(scene.cam.horiz, i);
+        Vector v = Vec_mul_s(scene.cam.vertic, j);
+        Vector fc = Vec_add(h, v);
 
-        Vector end = VecAdd(scene.cam.corner, fc);
-        Vector towards = VecSub(end, start);
+        Vector end = Vec_add(scene.cam.corner, fc);
+        Vector towards = Vec_sub(end, start);
 
         // Color on this sample.
-        Vector sc = SceneColorTrace(scene, start, towards, seed);
+        Vector sc = Scn_trace(scene, start, towards, seed);
 
-        VecIAdd(&color, sc);
+        Vec_iadd(&color, sc);
     }
-    VecIDivS(&color, scene.cfg.samples);
-    return Vec2Px(color);
+    Vec_idiv_s(&color, scene.cfg.samples);
+    return Vec_2Px(color);
 }

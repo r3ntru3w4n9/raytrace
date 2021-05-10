@@ -3,45 +3,45 @@
 #include <assert.h>
 #include <math.h>
 
-Sphere MakeSphere(Vector center, double radius, Material mat) {
+Sphere Sph_make(Vector center, double radius, Material mat) {
     assert(radius >= 0);
     return (Sphere){center, radius, mat};
 }
 
-Vector SphereNormal(Sphere sphere, Vector point) {
-    return VecSub(point, sphere.center);
+Vector Sph_normal(Sphere sphere, Vector point) {
+    return Vec_sub(point, sphere.center);
 }
 
 // SphereHit is the implementation of hit for Sphere.
-static HitData SphereHit(const void* sp, Vector source, Vector towards) {
+static HitData Sph_hit(const void* sp, Vector source, Vector towards) {
     const Sphere* sphere = sp;
     double radius = sphere->radius;
 
     // TODO: explain what this part is doing.
 
-    Vector oc = SphereNormal(*sphere, source);
-    double a = VecL2(towards);
-    double b = VecDot(oc, towards);
-    double c = VecL2(oc) - radius * radius;
+    Vector oc = Sph_normal(*sphere, source);
+    double a = Vec_l2(towards);
+    double b = Vec_dot(oc, towards);
+    double c = Vec_l2(oc) - radius * radius;
 
     double base = sqrt(b * b - a * c);
     double root1 = (-b - base) / a;
     double root2 = (-b + base) / a;
 
     if (root1 <= 0 && root2 <= 0) {
-        return Miss();
+        return HitData_miss();
     }
 
     double root = (root1 > 0) ? root1 : root2;
 
     assert(root > 0);
 
-    Vector point = VecAdd(source, VecMulS(towards, root));
-    return Hit(root, point, SphereNormal(*sphere, point), sphere->mat);
+    Vector point = Vec_add(source, Vec_mul_s(towards, root));
+    return HitData_hit(root, point, Sph_normal(*sphere, point), sphere->mat);
 }
 
 // SphereBounds is the implementation of bounds for Sphere.
-static Box SphereBounds(const void* sp) {
+static Box Sph_bounds(const void* sp) {
     const Sphere* sphere = sp;
     Vector c = sphere->center;
     double r = sphere->radius;
@@ -52,10 +52,10 @@ static Box SphereBounds(const void* sp) {
     };
 }
 
-Hittable SphereAsHittable(const Sphere* sphere) {
+Hittable Sph_Hittable(const Sphere* sphere) {
     return (Hittable){
         .object = sphere,
-        .hit = SphereHit,
-        .bounds = SphereBounds,
+        .hit = Sph_hit,
+        .bounds = Sph_bounds,
     };
 }

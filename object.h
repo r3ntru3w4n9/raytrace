@@ -20,15 +20,15 @@ typedef struct Sphere {
 // @param radius The radius of the sphere. radius >= 0
 // @param mat The material of the sphere.
 // @return A new sphere created from components.
-Sphere MakeSphere(Vector center, double radius, Material mat);
+Sphere Sph_make(Vector center, double radius, Material mat);
 
 // Normal vector at a certain point.
 // @param sphere The sphere whose surface normal vector we're interested in.
 // @param point The point for which we calculate the normal vector.
 // @return The normal vector at the point, with respect to sphere.
-Vector SphereNormal(Sphere sphere, Vector point);
+Vector Sph_normal(Sphere sphere, Vector point);
 
 // Convert Sphere to Hittable.
 // @param sphere The sphere to convert.
 // @return The Hittable object that holds a sphere.
-Hittable SphereAsHittable(const Sphere* sphere);
+Hittable Sph_Hittable(const Sphere* sphere);

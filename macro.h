@@ -1,6 +1,6 @@
 #pragma once
 
-#define SWAP(T, X, Y) \
+#define swap(T, X, Y) \
     do {              \
         T tmp = X;    \
         X = Y;        \
@@ -9,4 +9,4 @@
 
 #define forever for (;;)
 
-#define GENF(SEED) (double)rand_r(SEED) / RAND_MAX
+#define genfloat(SEED) (double)rand_r(SEED) / RAND_MAX
