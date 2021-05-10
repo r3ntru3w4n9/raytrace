@@ -15,6 +15,7 @@ Vector Mat_albedo(Material mat) {
 }
 
 // MatteScatter is the implementation of scatter for Matte.
+// @see Material
 static Vector Matte_scatter(const void* ma,
                             Vector input,
                             Vector normal,
@@ -23,12 +24,14 @@ static Vector Matte_scatter(const void* ma,
     (void)ma;
     (void)input;
 
+    // Lambertian is simulated with vector in balls.
     Vector un = Vec_unit(normal);
     Vector rb = Vec_rand_ball(1., seed);
     return Vec_add(rb, un);
 }
 
 // MatteAlbedo is the implementation of albedo for Matte.
+// @see Material
 static Vector Matte_albedo(const void* ma) {
     const Matte* matte = ma;
     return matte->albedo;
@@ -43,6 +46,7 @@ Material Matte_Mat(const Matte* matte) {
 }
 
 // MetalScatter is the implementation of scatter for Metal.
+// @see Material
 static Vector Metal_scatter(const void* me,
                             Vector input,
                             Vector normal,
@@ -50,15 +54,19 @@ static Vector Metal_scatter(const void* me,
     const Metal* metal = me;
     Vector ui = Vec_unit(input);
     Vector un = Vec_unit(normal);
+
+    // Metal reflects like a mirror does.
     Vector rb = Vec_rand_ball(metal->blur, seed);
     double cast_len = Vec_dot(ui, un) * 2.;
     Vector casted = Vec_mul_s(un, cast_len);
+
     // Input ray is blurred for a little bit.
     Vector blur_in = Vec_add(rb, ui);
     return Vec_sub(blur_in, casted);
 }
 
 // MetalAlbedo is the implementation of albedo for Metal.
+// @see Material
 static Vector Metal_albedo(const void* me) {
     const Metal* metal = me;
     return metal->albedo;
@@ -80,6 +88,7 @@ static double schlick(double cosine, double ratio) {
 }
 
 // GlassScatter is the implementation of scatter for Glass.
+// @see Material
 static Vector Glass_scatter(const void* gl,
                             Vector input,
                             Vector normal,
@@ -88,6 +97,7 @@ static Vector Glass_scatter(const void* gl,
     Vector ui = Vec_unit(input);
     Vector un = Vec_unit(normal);
 
+    // Calculating cos for Snell's law.
     double refractive = glass->refractive;
     double cos = Vec_dot(ui, un);
     double ratio = (cos < 0) ? 1. / refractive : refractive;
@@ -97,12 +107,15 @@ static Vector Glass_scatter(const void* gl,
     // cos**2 after refraction according to Snell's law.
     double cos_sq_ref = 1. - ratio * ratio * sin_sq;
 
-    bool will_refract = (cos <= 0) && cos_sq_ref >= 0;
+    // Facing the correct direction and no total internal reflection.
+    bool will_refract = (cos < 0) && cos_sq_ref >= 0;
 
     double random = genfloat(seed);
     Vector rand_blur = Vec_rand_ball(glass->blur, seed);
 
     if (will_refract && random >= schlick(fabs(cos), refractive)) {
+        // refract
+        // TODO: explain this part
         Vector scaled = Vec_mul_s(un, cos);
         Vector first = Vec_add(ui, scaled);
 
@@ -112,6 +125,7 @@ static Vector Glass_scatter(const void* gl,
 
         return Vec_add(Vec_mul_s(first, ratio), second);
     } else {
+        // reflect
         double product = Vec_dot(ui, un);
         Vector casted = Vec_mul_s(un, product * 2.);
         return Vec_sub(Vec_add(input, rand_blur), casted);
@@ -119,6 +133,7 @@ static Vector Glass_scatter(const void* gl,
 }
 
 // GlassAlbedo is the implementation of albedo for Glass.
+// @see Material
 static Vector Glass_albedo(const void* gl) {
     const Glass* glass = gl;
     return glass->albedo;

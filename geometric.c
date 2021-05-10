@@ -88,7 +88,7 @@ Vector Vec_mul_s(Vector vec, double s) {
 }
 
 Vector Vec_div_s(Vector vec, double s) {
-    assert(s != 0);
+    assert(s);
     return (Vector){vec.x / s, vec.y / s, vec.z / s};
 }
 
@@ -137,7 +137,7 @@ void Vec_imul_s(Vector* restrict vec, double s) {
 }
 
 void Vec_idiv_s(Vector* restrict vec, double s) {
-    assert(s != 0);
+    assert(s);
 
     vec->x /= s;
     vec->y /= s;
@@ -178,16 +178,16 @@ Vector Vec_abs(Vector vec) {
     return (Vector){fabs(vec.x), fabs(vec.y), fabs(vec.z)};
 }
 
-bool Vec_NaN(Vector vec) {
+bool Vec_nan(Vector vec) {
     return isnan(vec.x) && isnan(vec.y) && isnan(vec.z);
 }
 
 bool Vec_all(Vector vec) {
-    return vec.x != 0 && vec.y != 0 && vec.z != 0;
+    return vec.x && vec.y && vec.z;
 }
 
 bool Vec_any(Vector vec) {
-    return vec.x != 0 || vec.y != 0 || vec.z != 0;
+    return vec.x || vec.y || vec.z;
 }
 
 Vector Vec_from(double n) {
@@ -268,6 +268,7 @@ bool Box_is_through(Box box, Vector source, Vector towards) {
         double t_large = (Vec_dim(max, i) - Vec_dim(source, i)) * inv_b;
 
         if (inv_b < 0) {
+            // If inv_b < 0 then t_small would be larger than t_large
             swap(double, t_small, t_large);
         }
 

@@ -20,7 +20,7 @@ typedef struct Pair {
 // @return The pair generated such that pair.x < pair.y
 Pair Pair_ordered(double x, double y);
 
-// Check if a pair is ordered.
+// Checks if a pair is ordered.
 // @param pair The pair is checked.
 // @return True if the pair is ordered.
 bool Pair_is_ordered(Pair pair);
@@ -36,7 +36,7 @@ Pair Pair_rand_r(unsigned* seed);
 // @return A random pair in a ball.
 Pair Pair_rand_disk(double radius, unsigned* seed);
 
-// Create a pair that contains both of the pairs.
+// Creates a pair that contains both of the pairs.
 // @param a The first pair.
 // @param b The second pair.
 // @return A pair that is big enough to contain both a and b.
@@ -189,7 +189,7 @@ Vector Vec_abs(Vector vec);
 // isnan(vec)
 // @param vec Vector.
 // @return True if the vector contains NaN.
-bool Vec_NaN(Vector vec);
+bool Vec_nan(Vector vec);
 
 // all(vec)
 // @param vec Vector.
@@ -233,7 +233,7 @@ Vector Vec_rand_r(unsigned* seed);
 // @return A random vector in a ball.
 Vector Vec_rand_ball(double radius, unsigned* seed);
 
-// Convert a vector to a pixel. Scale the range from [0, 1) to [0, 255] integer.
+// Converts a vector to a pixel. Scales the range from [0, 1) to [0, 255] integer.
 // @param vec Vector to transform.
 // @return A pixel (r, g, b) in the range [0, 255].
 // @see Pixel
@@ -246,7 +246,7 @@ typedef struct Box {
     Pair x, y, z;
 } Box;
 
-// Create a box based on x, y, z pairs.
+// Creates a box based on x, y, z pairs.
 // @param x1 The first x.
 // @param x2 The second x.
 // @param y1 The first y.
@@ -256,7 +256,7 @@ typedef struct Box {
 // @return A box that has the boundaries as the parameters.
 Box Box_make(double x1, double x2, double y1, double y2, double z1, double z2);
 
-// Determine whether the box intersects with the ray.
+// Determines whether the box intersects with the ray.
 // @param box The box for the ray to hit.
 // @param source The source of the ray.
 // @param ray The direction of the ray.
@@ -268,7 +268,7 @@ bool Box_is_through(Box box, Vector source, Vector towards);
 // @return The 3D dimensional position for the center of the box.
 Vector Box_center(Box box);
 
-// Create a box that contains both of the boxes.
+// Creates a box that contains both of the boxes.
 // @param a The first box.
 // @param b The second box.
 // @return A box that is big enough to contain both a and b.

@@ -12,7 +12,7 @@ typedef struct Pixel {
     char r, g, b;
 } Pixel;
 
-// Convert a pixel to a vector. Scale the range from [0, 255] integer to [0, 1).
+// Converts a pixel to a vector. Scale the range from [0, 255] integer to [0, 1).
 // @param px Pixel to transform.
 // @return A vector (x, y, z) in the range [0, 1).
 // @see Vector

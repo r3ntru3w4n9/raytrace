@@ -7,12 +7,14 @@
 #include "material.h"
 
 // SceneHit is the implementation of hit for Scene.
+// @see Hittable
 static HitData Scn_hit(const void* sc, Vector source, Vector towards) {
     const Scene* scene = sc;
     return Hittable_hit(scene->hittable, source, towards);
 }
 
 // SceneBounds is the implementation of bounds for Scene.
+// @see Hittable
 static Box Scn_bounds(const void* sc) {
     const Scene* scene = sc;
     return Hittable_bounds(scene->hittable);
@@ -28,19 +30,22 @@ Vector Scn_trace(Scene scene, Vector source, Vector towards, unsigned* seed) {
 
     for (int d = 0; d < scene.cfg.depth; ++d) {
         HitData hd = Hittable_hit(sh, source, towards);
-
         if (HitData_has_hit(hd)) {
+            // If hit, update the (source, direction).
             Material mat = hd.mat;
             Vector reflected = Mat_scatter(mat, towards, hd.normal, seed);
             Vec_imul(&color, Mat_albedo(mat));
             source = hd.point;
             towards = reflected;
         } else {
+            // The ray does not hit anything. Display the sky's color.
             double t = .5 * Vec_unit(towards).y + 1.;
             Vector bg = Vec_add(Vec_from(1. - t), (Vector){.5 * t, .7 * t, t});
             return Vec_mul(color, bg);
         }
     }
+    // This means that the ray bounces too many times. The reason black is used
+    // because the ray has mixed in so many colors during its bounces.
     return Vec_o();
 }
 
@@ -50,10 +55,12 @@ Pixel Scn_color(Scene scene, int x, int y, unsigned* seed) {
     assert(y >= 0);
     assert(y < scene.cfg.height);
 
+    // Light through the aperture.
     Pair aij = Pair_rand_disk(scene.cam.aperture, seed);
     double ai = aij.x;
     double aj = aij.y;
 
+    // Light through the viewport.
     Vector h = Vec_mul_s(Vec_unit(scene.cam.horiz), ai);
     Vector v = Vec_mul_s(Vec_unit(scene.cam.vertic), aj);
     Vector start = Vec_add(scene.cam.source, Vec_add(h, v));

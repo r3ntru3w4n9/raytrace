@@ -15,6 +15,19 @@ Box Hittable_bounds(const Hittable ht) {
     return ht.bounds(ht.object);
 }
 
+Hittable Hittable_null(void) {
+    return (Hittable){
+        .object = NULL,
+        .hit = NULL,
+        .bounds = NULL,
+    };
+}
+
+bool Hittable_is_null(Hittable ht) {
+    // If object is null, don't bother with other attributes.
+    return !ht.object;
+}
+
 bool HitData_has_hit(const HitData hd) {
     return hd.t != INFINITY;
 }
@@ -39,13 +52,19 @@ Hittable* HitList_getitem(HitList hl, int index) {
     return hl.list + index;
 }
 
+void HitList_free(HitList* hl) {
+    free(hl->list);
+    hl->list = NULL;
+}
+
 // HitListHit is the implementation of hit for HitList.
+// @see Hittable
 static HitData HitList_hit(const void* hl, Vector source, Vector towards) {
     const HitList* hitlist = hl;
 
     towards = Vec_unit(towards);
-    HitData closest = HitData_miss();
 
+    HitData closest = HitData_miss();
     for (int i = 0; i < hitlist->length; ++i) {
         const Hittable* hittable = HitList_getitem(*hitlist, i);
         HitData hitdata = Hittable_hit(*hittable, source, towards);
@@ -57,6 +76,7 @@ static HitData HitList_hit(const void* hl, Vector source, Vector towards) {
 }
 
 // HitListBounds is the implementation of bounds for HitList.
+// @see Hittable
 static Box HitList_bounds(const void* hl) {
     const HitList* hitlist = hl;
     int length = hitlist->length;
@@ -75,67 +95,42 @@ static Box HitList_bounds(const void* hl) {
 
 Hittable HitList_Hittable(const HitList* hl) {
     return (Hittable){
-        .object = hl, .hit = HitList_hit, .bounds = HitList_bounds};
+        .object = hl,
+        .hit = HitList_hit,
+        .bounds = HitList_bounds,
+    };
 }
 
-HitNode HitNode_make(Hittable left, Hittable right) {
-    assert(left.object != right.object);
-    return (HitNode){left, right};
+_HitNode _HitNode_leaf(Hittable ht) {
+    return (_HitNode){
+        .hittable = ht,
+        .bounds = Hittable_bounds(ht),
+        .left = -1,
+        .right = -1,
+    };
 }
 
-HitNode* HitNode_new(Hittable left, Hittable right) {
-    HitNode* hn = malloc(sizeof(HitNode));
-    *hn = HitNode_make(left, right);
-    return hn;
-}
-
-// HitNodeHit is the implementation of hit for HitNode.
-static HitData HitNode_hit(const void* hn, Vector source, Vector towards) {
-    const HitNode* hitnode = hn;
-
-    const Hittable left = hitnode->left;
-    const Hittable right = hitnode->right;
-
-    Box lb = Hittable_bounds(left);
-    Box rb = Hittable_bounds(right);
-
-    // Are the boxes hit by the ray?
-    bool lb_hit = Box_is_through(lb, source, towards);
-    bool rb_hit = Box_is_through(rb, source, towards);
-
-    HitData left_hit =
-        lb_hit ? Hittable_hit(left, source, towards) : HitData_miss();
-    HitData right_hit =
-        rb_hit ? Hittable_hit(left, source, towards) : HitData_miss();
-
-    return (left_hit.t <= right_hit.t) ? left_hit : right_hit;
-}
-
-// HitNodeBounds is the implementation of bounds for HitNode.
-static Box HitNode_bounds(const void* hn) {
-    const HitNode* hitnode = hn;
-
-    Box lb = Hittable_bounds(hitnode->left);
-    Box rb = Hittable_bounds(hitnode->right);
-
-    return Box_wraps(lb, rb);
-}
-
-Hittable HitNode_Hittable(const HitNode* hn) {
-    return (Hittable){
-        .object = hn,
-        .hit = HitNode_hit,
-        .bounds = HitNode_bounds,
+_HitNode _HitNode_inter(Box bounds, int left, int right) {
+    return (_HitNode){
+        .hittable = Hittable_null(),
+        .bounds = bounds,
+        .left = left,
+        .right = right,
     };
 }
 
 // Return the center of a hittable.
+// @param h Hittable to use.
+// @return The center of the Hittable h.
 static Vector Hittable_center(Hittable h) {
     Box bounds = Hittable_bounds(h);
     return Box_center(bounds);
 }
 
 // Compare Hittable along the X axis.
+// @param a The first Hittable to compare.
+// @param b The second Hittable to compare.
+// @return a.center.x - b.center.x
 static int cmp_x(const void* a, const void* b) {
     const Hittable* ha = (Hittable*)a;
     const Hittable* hb = (Hittable*)b;
@@ -143,6 +138,9 @@ static int cmp_x(const void* a, const void* b) {
 }
 
 // Compare Hittable along the Y axis.
+// @param a The first Hittable to compare.
+// @param b The second Hittable to compare.
+// @return a.center.y - b.center.y
 static int cmp_y(const void* a, const void* b) {
     const Hittable* ha = (Hittable*)a;
     const Hittable* hb = (Hittable*)b;
@@ -150,87 +148,184 @@ static int cmp_y(const void* a, const void* b) {
 }
 
 // Compare Hittable along the Z axis.
+// @param a The first Hittable to compare.
+// @param b The second Hittable to compare.
+// @return a.center.z - b.center.z
 static int cmp_z(const void* a, const void* b) {
     const Hittable* ha = (Hittable*)a;
     const Hittable* hb = (Hittable*)b;
     return Hittable_center(*ha).z - Hittable_center(*hb).z;
 }
 
-// Partition the list according to how far apart each objects are along each
-// axis, and convert the list into a tree. List elements will end up in tree's
-// leaves, and internal nodes will be freshly allocated.
-static Hittable partition(Hittable* list, int length) {
-    switch (length) {
+// Variance along a dimension. The definition of variance is the sum of absolute
+// difference between individual entries and the mean. This does just that.
+// @param hl HitList to calculate variance on.
+// @param len Length of the HitList
+// @param dim Dimension to search. Only 0, 1, 2 are allowed. They correspond to
+// x, y, z dimensions. If any other value is passed-in, the function breaks.
+// @return The variance along the given axis.
+static double var_dim(Hittable* hl, int len, int dim) {
+    switch (dim) {
         case 0:
-            // Because case 1 and case 2 are all handled, case 0 will not
-            // happen.
-            assert(0 && "unreachable");
         case 1:
-            return list[0];
-        case 2: {
-            return HitNode_Hittable(HitNode_new(list[0], list[1]));
-        }
-        default:
+        case 2:
             break;
+        default:
+            // Only {0, 1, 2} are legal values for dim.
+            assert(0 && "unreachable");
     }
 
-    Vector avg = Vec_o();
-    for (int i = 0; i < length; ++i) {
-        Vec_iadd(&avg, Hittable_center(list[i]));
+    double avg = 0;
+    for (int i = 0; i < len; ++i) {
+        Vector center = Hittable_center(hl[i]);
+        avg += Vec_dim(center, dim);
     }
-    Vec_idiv_s(&avg, length);
+    avg /= len;
 
-    // Variance along different axises.
-    double varx, vary, varz;
-    varx = vary = varz = 0.;
-    for (int i = 0; i < length; ++i) {
-        Vector center = Hittable_center(list[i]);
-        varx += fabs(center.x - avg.x);
-        vary += fabs(center.y - avg.y);
-        varz += fabs(center.z - avg.z);
+    double var = 0;
+    for (int i = 0; i < len; ++i) {
+        Vector center = Hittable_center(hl[i]);
+        var += fabs(Vec_dim(center, dim) - avg);
     }
+    return var;
+}
+
+// Sort the Hittable array according to the dimension with maximum variance.
+// @param hl The Hittable array.
+// @param len Length of the Hittable array.
+static void sort_max_var(Hittable* hl, int len) {
+    double varx = var_dim(hl, len, 0);
+    double vary = var_dim(hl, len, 1);
+    double varz = var_dim(hl, len, 2);
+
+    // Only one of the following three if's will be called. It does not matter
+    // which, what's important is to separate the list into far apart groups.
 
     if (varx >= vary && varx >= varz) {
-        qsort(list, length, sizeof(Hittable), cmp_x);
+        qsort(hl, len, sizeof(Hittable), cmp_x);
     }
 
     if (vary >= varx && vary >= varz) {
-        qsort(list, length, sizeof(Hittable), cmp_y);
+        qsort(hl, len, sizeof(Hittable), cmp_y);
     }
 
     if (varz >= varx && varz >= vary) {
-        qsort(list, length, sizeof(Hittable), cmp_z);
+        qsort(hl, len, sizeof(Hittable), cmp_z);
+    }
+}
+
+// Partition the list according to how far apart each objects are along each
+// axis, and convert the list into a tree. List elements will end up in tree's
+// leaves, and internal nodes will be freshly allocated. This is not
+// thread-safe. Every call to this function stores a new element in the
+// nodelist. Every call to this function visits an increasingly narrow region in
+// the original Hittable list hl, eventually down to length 1.
+// @param hl HitList's pointer. The original elements.
+// @param hl_len Length of HitList.
+// @param nl NodeList's pointer. The new elements.
+// @param nl_idx Current index of NodeList to modify.
+// @return Index of node stored by the function.
+static int partition(Hittable* hl, int hl_len, _HitNode* nl, int* nl_idx) {
+    if (hl_len == 0) {
+        // Because case 1 and case 2 are all handled, case 0 will not happen.
+        assert(0 && "unreachable");
+    } else if (hl_len == 1) {
+        // Every call eventually falls into this case since case 2 directly
+        // calls this 2 times. So every element is going to be visited.
+        int mod = (*nl_idx)++;
+
+        // Makes copy to hl[0]
+        Hittable object = hl[0];
+
+        nl[mod] = _HitNode_leaf(object);
+        return mod;
     }
 
-    int half = length / 2;
+    // This basically performs clustering. (Sort and group by location.)
 
-    Hittable left = partition(list, half);
-    Hittable right = partition(list + half, length - half);
+    sort_max_var(hl, hl_len);
 
-    return HitNode_Hittable(HitNode_new(left, right));
+    int half = hl_len / 2;
+    int left = partition(hl, half, nl, nl_idx);
+    int right = partition(hl + half, hl_len - half, nl, nl_idx);
+
+    // Now nl[left] is the left node, and nl[right] is the right node.
+    // mod is the index to modify.
+    int mod = (*nl_idx)++;
+    assert(left < mod);
+    assert(right < mod);
+
+    // Boundary wraps its entire sub-trees.
+    Box bounds = Box_wraps(nl[left].bounds, nl[right].bounds);
+    nl[mod] = _HitNode_inter(bounds, left, right);
+    return mod;
 }
 
 HitTree HitTree_make(HitList hl) {
     Hittable* list = hl.list;
-    int length = hl.length;
+    int length = 2 * hl.length - 1;
+    assert(length > 0);
 
-    assert(length != 0);
+    _HitNode* nodelist = calloc(length, sizeof(_HitNode));
 
-    Hittable root = partition(list, length);
+    int cidx = 0;
+    partition(list, hl.length, nodelist, &cidx);
+    assert(cidx == length);
 
-    return (HitTree){root};
+    return (HitTree){.nodelist = nodelist, .length = length};
+}
+
+void HitTree_free(HitTree* ht) {
+    free(ht->nodelist);
+    ht->nodelist = NULL;
+}
+
+// Performs hit on a nodelist representing a tree.
+// @param nodelist The nodelist that is actually a tree.
+// @param index The root index of the current sub-tree.
+// @param source The source of the ray.
+// @param towards The direction the ray is moving towards.
+// @return The record of this hit.
+static HitData nl_hit(const _HitNode* nodelist,
+                      int index,
+                      Vector source,
+                      Vector towards) {
+    _HitNode root = nodelist[index];
+    // The ray passes through the object only if it passes through the box.
+    if (Box_is_through(root.bounds, source, towards)) {
+        Hittable ht = root.hittable;
+        if (Hittable_is_null(ht)) {
+            // The node is internal.
+            HitData lh = nl_hit(nodelist, root.left, source, towards);
+            HitData rh = nl_hit(nodelist, root.right, source, towards);
+
+            // Return the closer one.
+            // If either or both lh.t and rh.t are infinity,
+            // this function still works.
+            return (lh.t <= rh.t) ? lh : rh;
+        } else {
+            // The node is a leaf.
+            return Hittable_hit(ht, source, towards);
+        }
+    } else {
+        return HitData_miss();
+    }
 }
 
 // HitTreeHit is the implementation of hit for HitTree.
+// @see Hittable
 static HitData HitTree_hit(const void* ht, Vector source, Vector towards) {
     const HitTree* hittree = ht;
-    return Hittable_hit(hittree->root, source, towards);
+    int root_idx = hittree->length - 1;
+    return nl_hit(hittree->nodelist, root_idx, source, towards);
 }
 
 // HitTreeBounds is the implementation of bounds for HitTree.
+// @see Hittable
 static Box HitTree_bounds(const void* ht) {
     const HitTree* hittree = ht;
-    return Hittable_bounds(hittree->root);
+    int root_idx = hittree->length - 1;
+    return hittree->nodelist[root_idx].bounds;
 }
 
 Hittable HitTree_Hittable(const HitTree* ht) {

@@ -42,7 +42,7 @@ typedef struct Scene {
     Hittable hittable;
 } Scene;
 
-// Convert a Scene to a Hittable.
+// Converts a Scene to a Hittable.
 // @param scene Scene to convert.
 // Either scene lives on the heap or has static lifetime.
 // @return The Hittable object that stores a Scene
@@ -56,7 +56,7 @@ Hittable Scn_Hittable(const Scene* scene);
 // @return The resulting color from the reflections
 Vector Scn_trace(Scene scene, Vector source, Vector towards, unsigned* seed);
 
-// Determine the pixel color given the scene and the pixel location.
+// Determines the pixel color given the scene and the pixel location.
 // @param scene The scene to use.
 // @param x The X position of the pixel. x is smaller than the width.
 // @param y The Y position of the pixel. y is smaller than the height.

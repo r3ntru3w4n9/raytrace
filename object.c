@@ -13,6 +13,7 @@ Vector Sph_normal(Sphere sphere, Vector point) {
 }
 
 // SphereHit is the implementation of hit for Sphere.
+// @see Hittable
 static HitData Sph_hit(const void* sp, Vector source, Vector towards) {
     const Sphere* sphere = sp;
     double radius = sphere->radius;
@@ -41,6 +42,7 @@ static HitData Sph_hit(const void* sp, Vector source, Vector towards) {
 }
 
 // SphereBounds is the implementation of bounds for Sphere.
+// @see Hittable
 static Box Sph_bounds(const void* sp) {
     const Sphere* sphere = sp;
     Vector c = sphere->center;

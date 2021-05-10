@@ -40,7 +40,7 @@ typedef struct Matte {
     Vector albedo;
 } Matte;
 
-// Convert Matte to Material.
+// Converts Matte to Material.
 // @param matte Matte to convert.
 // @return The material object that holds matte.
 Material Matte_Mat(const Matte* matte);
@@ -53,7 +53,7 @@ typedef struct Metal {
     double blur;
 } Metal;
 
-// Convert Metal to Material.
+// Converts Metal to Material.
 // @param metal Metal to convert.
 // @return The material object that holds metal.
 Material Metal_Mat(const Metal* metal);
@@ -68,7 +68,7 @@ typedef struct Glass {
     double refractive;
 } Glass;
 
-// Convert Glass to Material.
+// Converts Glass to Material.
 // @param glass Glass to convert.
 // @return The material object that holds glass.
 Material Glass_Mat(const Glass* glass);
